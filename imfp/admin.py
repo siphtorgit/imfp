@@ -3,7 +3,7 @@ from warnings import warn
 from typing import Union
 
 
-def set_imf_app_name(name: str = "imfp"):
+def set_imf_app_name(name: str = "imfp") -> None:
     """
     Set the IMF Application Name.
 
@@ -52,7 +52,7 @@ def set_imf_app_name(name: str = "imfp"):
     return None
 
 
-def set_imf_wait_time(wait_time: Union[int, float] = 1.5):
+def set_imf_wait_time(wait_time: Union[int, float] = 1.5) -> None:
     """
     Set the IMF wait time as an environment variable.
 

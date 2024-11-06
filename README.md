@@ -12,7 +12,6 @@ API](http://datahelp.imf.org/knowledgebase/articles/667681-using-json-restful-we
 
 To install the stable version of imfp from PyPi, use pip.
 
-
 ```python
 pip install -q --upgrade imfp
 ```
@@ -712,4 +711,4 @@ Also note that by default, `imfp` functions will retry any API call rejected for
 
 I would love to have your help in improving `imfp`. If you encounter a bug while using the library, please open an issue. Alternatively, fix the bug and open a pull request to the `dev` branch. Thanks in advance for your help!
 
-Note to maintainers: To deploy a new version of the package, increment the version number with `poetry version patch` (or `minor`/`major` for larger updates) and push to dev. Github Actions will automatically format the code with black, render the README, and run the unit tests. If the workflow completes successfully, open a PR to main. After merging, the workflow will test again as one last sanity check and then automatically deploy the new version to PyPi. Currently, new Github releases must be created manually, but this will be automated in the future.
+Note to maintainers: To deploy a new version of the package, increment the version number with `poetry version patch` (or `minor`/`major` for larger updates), update the lock file with the latest dependencies with `poetry update`, run the tests with `pytest tests`, make any necessary documentation changes in `NEWS` and `README.ipynb`, and push to dev. Github Actions will automatically format the code with black, render the README, and run the unit tests. If the workflow completes successfully, open a PR to main. After merging, the workflow will test again as one last sanity check and then automatically deploy the new version to PyPi. Currently, new Github releases must be created manually, but this will be automated in the future.

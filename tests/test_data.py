@@ -1,3 +1,4 @@
+import logging
 import pytest
 import os
 import pandas as pd
@@ -9,6 +10,9 @@ from imfp import (
     set_imf_wait_time,
 )
 from imfp.utils import _imf_save_response, _imf_use_cache
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 # Set test configuration options

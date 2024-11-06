@@ -1,10 +1,13 @@
+import logging
 from pandas import DataFrame, Series, concat
 from warnings import warn
 from .utils import _download_parse, _imf_dimensions, _imf_metadata
 from urllib.parse import urlencode
 
+logger = logging.getLogger(__name__)
 
-def imf_databases(times=3):
+
+def imf_databases(times: int = 3) -> DataFrame:
     """
     List IMF database IDs and descriptions
 
@@ -42,7 +45,7 @@ def imf_databases(times=3):
     return database_list
 
 
-def imf_parameters(database_id, times=2):
+def imf_parameters(database_id: str, times: int = 2) -> dict[str, DataFrame]:
     """
     List input parameters and available parameter values for use in
     making API requests from a given IMF database.
@@ -121,7 +124,9 @@ def imf_parameters(database_id, times=2):
     return parameter_list
 
 
-def imf_parameter_defs(database_id, times=3, inputs_only=True):
+def imf_parameter_defs(
+    database_id: str, times: int = 3, inputs_only: bool = True
+) -> DataFrame:
     """
     Get text descriptions of input parameters used in making API
     requests from a given IMF database
@@ -180,7 +185,7 @@ def imf_dataset(
     times: int = 3,
     include_metadata: bool = False,
     **kwargs,
-):
+) -> DataFrame | tuple[DataFrame, DataFrame]:
     """
     Download a data series from the IMF.
 
