@@ -2,11 +2,11 @@
 name = "imfp"
 version = "1.1.3"
 description = "Python package for downloading economic data from the International Monetary Fund JSON RESTful API endpoint."
-authors = ["Christopher C. Smith <chriscarrollsmith@gmail.com>"]
+authors = ["Christopher C. Smith <christopher.smith@promptlytechnologies.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/chriscarrollsmith/imfp"
-repository = "https://github.com/chriscarrollsmith/imfp"
+homepage = "https://promptlytechnologies.com/imfp"
+repository = "https://github.com/Promptly-Technologies-LLC/imfp"
 keywords = ["economics", "finance", "IMF", "API"]
 classifiers = [
     "Intended Audience :: Financial and Insurance Industry",
