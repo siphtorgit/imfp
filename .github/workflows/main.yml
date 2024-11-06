@@ -26,10 +26,10 @@ jobs:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           # Attempt to publish and capture output
-          if poetry publish --build -u __token__ -p $PYPI_TOKEN 2>&1; then
+          if OUTPUT=$(poetry publish --build -u __token__ -p $PYPI_TOKEN 2>&1); then
             echo "Package published successfully"
           else
-            echo "::warning::Version has not been incremented. No new version published."
+            echo "::warning::Not published to PyPi. Poetry output: $OUTPUT"
           fi
           # Ensure step exits successfully
           exit 0
