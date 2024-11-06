@@ -124,7 +124,9 @@ def imf_parameters(database_id: str, times: int = 2) -> dict[str, DataFrame]:
     return parameter_list
 
 
-def imf_parameter_defs(database_id: str, times: int = 3, inputs_only: bool = True) -> DataFrame:
+def imf_parameter_defs(
+    database_id: str, times: int = 3, inputs_only: bool = True
+) -> DataFrame:
     """
     Get text descriptions of input parameters used in making API
     requests from a given IMF database

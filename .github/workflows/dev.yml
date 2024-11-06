@@ -52,9 +52,6 @@ jobs:
       - name: Format code with black
         run: |
           poetry run black .
-      - name: Build README.md
-        run: |
-          poetry run python README_files/render.py
       - name: Commit and push changes to repository
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

@@ -250,7 +250,6 @@ def test_imf_dataset_data_frame_prep(set_options):
         and all(col in desired_names for col in case_2.columns)
         and all(col in desired_names for col in case_3.columns)
     )
-    
 
 
 def test_imf_dataset_include_metadata(set_options):

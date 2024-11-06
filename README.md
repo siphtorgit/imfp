@@ -12,7 +12,6 @@ API](http://datahelp.imf.org/knowledgebase/articles/667681-using-json-restful-we
 
 To install the stable version of imfp from PyPi, use pip.
 
-
 ```python
 pip install -q --upgrade imfp
 ```
