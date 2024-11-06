@@ -1,6 +1,10 @@
+import logging
 import pytest
 from imfp import set_imf_app_name, set_imf_wait_time
 import os
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 def test_set_imf_app_name():

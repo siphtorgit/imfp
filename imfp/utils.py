@@ -5,6 +5,9 @@ from requests import get
 from json import loads, load, dump, JSONDecodeError
 from pandas import DataFrame
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _min_wait_time_limited(default_wait_time=1.5):
@@ -44,7 +47,9 @@ def _imf_get(url, headers):
             )
         print(response.text)
     """
-    return get(url, headers)
+    logger.debug(f"Sending GET request to {url}")
+    response = get(url, headers)
+    return response
 
 
 _imf_use_cache = False

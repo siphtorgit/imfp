@@ -1,3 +1,4 @@
+import logging
 import pytest
 import os
 import pandas as pd
@@ -9,6 +10,9 @@ from imfp import (
     set_imf_wait_time,
 )
 from imfp.utils import _imf_save_response, _imf_use_cache
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 # Set test configuration options
@@ -246,6 +250,7 @@ def test_imf_dataset_data_frame_prep(set_options):
         and all(col in desired_names for col in case_2.columns)
         and all(col in desired_names for col in case_3.columns)
     )
+    
 
 
 def test_imf_dataset_include_metadata(set_options):
