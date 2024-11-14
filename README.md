@@ -51,12 +51,20 @@ We welcome contributions to improve `imfp`! Here's how you can help:
    - Create a fix
    - Open a pull request to the `dev` branch
 
-For maintainers: To deploy a new version:
+Note that you will need to install the [Poetry](https://python-poetry.org/docs/#installation) package manager to install the dependencies and run the tests, and the [Quarto CLI tool](https://quarto.org/docs/download/) to render the documentation.
+
+## Maintainers
+
+To deploy a new version:
 1. Increment version with `poetry version patch/minor/major`
 2. Update dependencies with `poetry update`
 3. Run tests with `pytest tests`
 4. Update documentation if needed
 5. Push to dev
 6. Open PR to main
+
+To render and deploy documentation:
+1. `quarto render`
+2. `quarto publish`
 
 The GitHub Actions workflow will handle code formatting, testing, and deployment to PyPI after merge.
