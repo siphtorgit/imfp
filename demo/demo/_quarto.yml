@@ -1,0 +1,21 @@
+project:
+  type: website
+
+website:
+  title: "imfp Demo"
+  navbar:
+    left:
+    - href: About.qmd
+      text: About
+    - href: imfp_demo.qmd
+      text: Code
+    - href: listing.qmd
+      text: Blog
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+
+
+

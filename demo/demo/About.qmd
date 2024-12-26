@@ -1,0 +1,19 @@
+---
+title: "Jenny Xu"
+about:
+  template: jolla
+  image: Headshot.jpg
+  links:
+    - icon: mailbox
+      text: Email
+      href: mailto:yzxxu@ucdavis.edu
+    - icon: linkedin
+      text: Linkedin
+      href: https://www.linkedin.com/in/jenny-xu-28519a273/
+    - icon: github
+      text: Github
+      href: https://github.com/jennyyzxu
+---
+
+Hi there! My name is Jenny, and I'm a third-year student at University of California, Davis, double majoring in Statistics and Psychology. I've always been interested in becoming a data analyst working in tech, internet, or research industries. Interning at Promptly Technologies helped me learn a ton. A quick fun fact for me is that my MBTI is ISFJ (Defender)!
+
