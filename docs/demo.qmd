@@ -1,5 +1,6 @@
 ---
-title: "imfp Demo Project"
+title: "Economic Growth and Gender Equality: An Analysis Using IMF Data"
+author: "Jenny Xu"
 ---
 
 This data analysis project aims to explore the relationship between economic growth and gender equality using `imfp`, which allows us to download data from IMF (International Monetary Fund). `imfp` can be integrated with other python tools to streamline the computational process. To demonstrate its functionality, the project experimented with a variety of visualization and analysis methods. 
@@ -192,7 +193,7 @@ for dataset in datasets:
 # view_dataframe_in_browser(params.get("IFS").get("indicator"))
 ```
 
-“freq” stands for Frequency, such as Annual, Monthly, or Quarterly. "ref_area" stands for Geogrpahical Area, such as US (United States), JP (Japan), and GB (United Kindom). “indicator" refers to the specific dataset in the database, including input code and description. For example, if we display all the indicators for IFS database, the GDP deflator dataset has an input code of "NGDP_D_SA_IX" with a full name description of Gross Domestic Product, Deflator, Seasonally Adjusted, Index. 
+"freq" stands for Frequency, such as Annual, Monthly, or Quarterly. "ref_area" stands for Geogrpahical Area, such as US (United States), JP (Japan), and GB (United Kindom). "indicator" refers to the specific dataset in the database, including input code and description. For example, if we display all the indicators for IFS database, the GDP deflator dataset has an input code of "NGDP_D_SA_IX" with a full name description of Gross Domestic Product, Deflator, Seasonally Adjusted, Index. 
 
 We paired the database with the specific dataset indicator to read and store the csv file. 
 
@@ -255,7 +256,9 @@ We kept percents as decimals to make them easy to work with for calculation. Dif
 
 ```{python}
 # Calculate percent change for each ref_area
-GII_data[f'pct_change'] = GII_data.sort_values(['ref_area', 'time_period']).groupby('ref_area')['obs_value'].pct_change()
+# First, create a copy and reset the index to avoid duplicate index issues
+GII_data_sorted = GII_data.sort_values(['ref_area', 'time_period']).reset_index(drop=True)
+GII_data['pct_change'] = GII_data_sorted.groupby('ref_area')['obs_value'].pct_change()
 
 # Display the first few rows of the updated dataset
 GII_data.head()
@@ -726,4 +729,27 @@ test_result = grangercausalitytests(train_data[['GII_change', 'GDP_change']], ma
 ## Conclusion
 In wrapping up our analysis, we found no evidence to support a significant relationship between the Change in Real GDP per capita and the Change in the Gender Inequality Index (GII). This suggests that economic growth may not have a direct impact on gender equality. However, our findings open the door to questions for future research. Check out the blog for full analysis!
 
+## About the Author
 
+<div style="display: flex; align-items: start; gap: 20px;">
+<img src="static/Headshot.jpg" alt="Jenny Xu" style="width: 200px; border-radius: 10px;"/>
+<div>
+Hi there! My name is Jenny, and I'm a third-year student at University of California, Davis, double majoring in Statistics and Psychology. I've always been interested in becoming a data analyst working in tech, internet, or research industries. Interning at Promptly Technologies helped me learn a ton. A quick fun fact for me is that my MBTI is ISFJ (Defender)!
+
+<div style="margin-top: 15px;">
+<a href="mailto:yzxxu@ucdavis.edu" style="text-decoration: none; margin-right: 15px;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+  Email
+</a>
+<a href="https://www.linkedin.com/in/jenny-xu-28519a273/" style="text-decoration: none; margin-right: 15px;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+  LinkedIn
+</a>
+<a href="https://github.com/jennyyzxu" style="text-decoration: none;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+  GitHub
+</a>
+</div>
+
+</div>
+</div>
