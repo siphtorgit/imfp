@@ -1,0 +1,28 @@
+name: format
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+      - name: Install project
+        run: |
+          poetry install
+      - name: Format code with black
+        run: |
+          poetry run black .
+      - name: Commit and push changes to repository
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Automated code format'
