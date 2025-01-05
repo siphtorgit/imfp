@@ -1,5 +1,13 @@
 # All updates will be detailed here
 
+## Version 1.1.4
+
+- Added a demo project by Jenny Xu
+
+## Version 1.1.3
+
+- Migrated from Sphinx to Quarto documentation
+
 ## Version 1.1.2
 
 - Updated dependencies
