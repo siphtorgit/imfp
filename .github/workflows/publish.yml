@@ -21,15 +21,7 @@ jobs:
       - name: Run tests with pytest
         run: |
           poetry run pytest tests
-      - name: Publish to PyPi
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          # Attempt to publish and capture output
-          if OUTPUT=$(poetry publish --build --no-interaction -u __token__ -p $PYPI_TOKEN 2>&1); then
-            echo "Package published successfully"
-          else
-            echo "::warning::Not published to PyPi. Did you increment the version number? Poetry output: $OUTPUT"
-          fi
-          # Ensure step exits successfully
-          exit 0
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/
