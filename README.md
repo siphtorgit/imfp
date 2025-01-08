@@ -49,18 +49,19 @@ We welcome contributions to improve `imfp`! Here's how you can help:
 2. To fix a bug:
    - Fork the repository
    - Create a fix
-   - Open a pull request to the `dev` branch
+   - Open a pull request to our `main` branch
 
-Note that you will need to install the [Poetry](https://python-poetry.org/docs/#installation) package manager to install the dependencies and run the tests, and the [Quarto CLI tool](https://quarto.org/docs/download/) to render the documentation.
+Note that you will need to install the [uv](https://astr) package manager to install the dependencies and run the tests, and the [Quarto CLI tool](https://quarto.org/docs/download/) to render the documentation.
 
 ## Maintainers
 
 To deploy a new version:
-1. Increment version with `poetry version patch/minor/major`
-2. Update dependencies with `poetry update`
-3. Run tests with `pytest tests`
+
+1. Increment version in `pyproject.toml`
+2. Update dependencies with `uv lock --upgrade-package dependency_name` for each dependency
+3. Run tests with `uv run pytest tests`
 4. Update documentation if needed
-5. Push to dev
+5. Push to issue branch
 6. Open PR to main
 
 To render and deploy documentation:
