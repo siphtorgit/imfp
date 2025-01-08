@@ -1,5 +1,11 @@
 # All updates will be detailed here
 
+## Version 1.1.5
+
+- Replaced poetry with uv package manager
+
+- Added setuptools as build backend
+
 ## Version 1.1.4
 
 - Added a demo project by Jenny Xu
