@@ -5,7 +5,7 @@ on:
     branches: main
 
 jobs:
-  build-deploy:
+  publish-documentation:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -26,6 +26,11 @@ jobs:
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Render and Publish
         run: uv run quarto publish gh-pages --no-prompt --no-browser
