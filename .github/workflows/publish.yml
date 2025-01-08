@@ -1,7 +1,6 @@
 name: publish
 
 on:
-  workflow_dispatch:
   push:
     branches: main
 
@@ -29,8 +28,4 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render and Publish
-        uses: quarto-dev/quarto-actions/publish@v2
-        with:
-          target: gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uv run quarto publish gh-pages --no-prompt --no-browser
