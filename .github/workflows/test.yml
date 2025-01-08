@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies and test that documentation renders and tests pass
         run: |
           uv sync
-          quarto render
+          uv run quarto render
           uv run pytest tests
     outputs:
       matrix: ${{ toJson(matrix) }}
