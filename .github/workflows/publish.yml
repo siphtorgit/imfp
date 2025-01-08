@@ -13,18 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-      - name: Build and install project
+          python-version-file: "pyproject.toml"
+
+      - name: Build project wheel and test that it installs without errors
         run: |
-          poetry build
-          poetry install
-      - name: Run tests with pytest
+          uv build
+          uv sync
+          uv pip install dist/imfp-*.whl
+
+      - name: Run tests
         run: |
-          poetry run pytest tests
+          uv run pytest
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
