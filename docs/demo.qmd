@@ -428,8 +428,19 @@ Scatterplot use dots to represent values of two numeric variables. The horizonta
 Based on the scatterplot, it seemed like there was a slight positive relationship between GDP change and GII change as shown by the flat regression line. Gender inequality was decreasing (gender equality was improving) a little faster in country-years with low GDP growth and a little slower in country-years with high GDP growth.
 
 ```{python}
+# Convert numeric columns to float
+numeric_columns = [
+    'GII', 'GII_change', 'Nominal', 'Deflator', 'Population', 
+    'Real GDP', 'Real GDP per Capita', 'GDP_change'
+]
+for col in numeric_columns:
+    combined_data[col] = pd.to_numeric(combined_data[col], errors='coerce')
+
+# Count NAs
+print(f"Dropping {combined_data[numeric_columns].isna().sum()} rows with NAs")
+
 # Drop NAs
-combined_data = combined_data.dropna(subset=['GDP_change', 'GII_change'])
+combined_data = combined_data.dropna(subset=numeric_columns)
 
 # Plot the data points
 plt.figure(figsize=(8, 6))
@@ -454,7 +465,6 @@ y_pred = reg.predict(X)
 plt.plot(combined_data['GDP_change'], y_pred, color='red', linewidth=2)
 
 plt.show()
-
 ```
 
 ### Time Series Line Plot
@@ -621,6 +631,11 @@ Based on the summary, we concluded the following:
 * R-squared = 0.004. Only 0.4% of the variance in GII change could be explained by GDP change.
 
 * We were 95% confident that the interval from -0.003 to 0.169 captured the true slope of GDP change. Because 0 was included, we are uncertain about the effect of GDP change on GII chnage.
+
+```{python}
+# Get column data type summaries of combined_data
+combined_data.info()
+```
 
 ```{python}
 # Define independent and depenent variables

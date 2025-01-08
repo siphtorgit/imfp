@@ -64,8 +64,4 @@ To deploy a new version:
 5. Push to issue branch
 6. Open PR to main
 
-To render and deploy documentation:
-1. `quarto render`
-2. `quarto publish`
-
-The GitHub Actions workflow will handle code formatting, testing, and deployment to PyPI after merge.
+The GitHub Actions workflow will handle code formatting and testing, documentation rendering and publishing, and release to PyPI after the merge.
