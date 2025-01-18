@@ -5,13 +5,11 @@ title: "imfp"
 
 # imfp
 
-[![Tests](https://github.com/chriscarrollsmith/imfp/actions/workflows/main.yml/badge.svg)](https://github.com/chriscarrollsmith/imfp/actions/workflows/main.yml)
+[![Tests](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/main.yml/badge.svg)](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/main.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/imfp.svg)](https://pypi.python.org/pypi/imfp)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-`imfp`, by Christopher C. Smith, is a Python package for downloading data from the [International Monetary
-Fund's](http://data.imf.org/) [RESTful JSON
-API](http://datahelp.imf.org/knowledgebase/articles/667681-using-json-restful-web-service).
+`imfp`, created and maintained by [Promptly Technologies](https://promptlytechnologies.com), is a Python package for downloading data from the [International Monetary Fund's](http://data.imf.org/) [RESTful JSON API](http://datahelp.imf.org/knowledgebase/articles/667681-using-json-restful-web-service).
 
 ## Installation
 
@@ -255,15 +253,15 @@ Also note that by default, `imfp` functions will retry any API call rejected for
 
 ## Contributing
 
-I would love to have your help in improving `imfp`. If you encounter a bug while using the library, please open an issue. Alternatively, fix the bug and open a pull request. Thanks in advance for your help!
+We welcome contributions to improve `imfp`! Here's how you can help:
 
-Note to maintainers: To deploy a new version of the package:
+1. If you find a bug, please open an issue
+2. To fix a bug:
+   - Fork and clone the repository and open a terminal in the repository directory
+   - Install a git hook to enforce conventional commits with `curl -o- https://raw.githubusercontent.com/tapsellorg/conventional-commits-git-hook/master/scripts/install.sh | sh`
+   - Create a fix, commit it with an ["Angular-style Conventional Commit"](https://www.conventionalcommits.org/en/v1.0.0-beta.4/) message, and push it to your fork
+   - Open a pull request to our `main` branch
 
-1. Increment the version number in pyproject.toml. (Follow the rules of [semantic versioning](https://semver.org/).)
-2. Upgrade dependencies to their latest versions by running `uv lock --upgrade-package dependency_name` for each dependency
-3. Make sure the tests still pass with `uv run pytest`
-4. Make any necessary documentation changes in `NEWS` and `README.ipynb`
-5. Push to dev. Github Actions will automatically format the code with black, render the README, and run the unit tests
-6. If the workflow completes successfully, open a PR to main
-7. After merging, the workflow will test again as one last sanity check and then automatically deploy the new version to PyPi
-8. Create a new Github release
+Note that you will need to install the [uv](https://astral.sh/setup-uv/) package manager to install the dependencies and run the tests, and the [Quarto CLI tool](https://quarto.org/docs/download/) to render the documentation.
+
+Note that version incrementing, package building, testing, documentation rendering, publishing to PyPI, and Github release creation is handled automatically by the GitHub Actions workflow based on the commit messages.

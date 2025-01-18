@@ -1,22 +1,24 @@
-# All updates will be detailed here
+# CHANGELOG
 
-## Version 1.1.5
+<!-- version list -->
+
+## v1.1.5
 
 - Replaced poetry with uv package manager
 
 - Added setuptools as build backend
 
-## Version 1.1.4
+## v1.1.4
 
 - Added a demo project by Jenny Xu
 
 - Updated dependencies
 
-## Version 1.1.3
+## v1.1.3
 
 - Migrated from Sphinx to Quarto documentation
 
-## Version 1.1.2
+## v1.1.2
 
 - Updated dependencies
 
@@ -24,7 +26,7 @@
 
 - Repaired broken tests badge in README.ipynb
 
-## Version 1.1.1
+## v1.1.1
 
 - Updated dependencies
 
@@ -34,7 +36,7 @@
 
 - Implemented automated PyPi deployment with GitHub Actions
 
-## Version 1.1.0
+## v1.1.0
 
 - Implemented response mocking during unit tests
 
@@ -44,19 +46,19 @@
 
 - Introduced new `set_imf_wait_time` function
 
-## Version 1.0.8
+## v1.0.8
 
 - Handled a case where, apparently, certain databases have required request parameters
 
 - Added a couple experimental scripts for users who want to download whole databases; use at your own risk (of being blocked by the API)!
 
-## Version 1.0.7
+## v1.0.7
 
 - Added error handling for the case where the user-specified parameter codes are valid, but the years are outside the dataset's range
 
 - Adjusted the regular expression used in passing through error messages from the API endpoint
 
-## Version 1.0.6
+## v1.0.6
 
 - Corrected bug in URL handling when user omits one or more parameters
 
@@ -65,28 +67,28 @@
 - Implemented formatting with `black` library
 
 
-## Version 1.0.5
+## v1.0.5
 
 - Minor adjustments to project docs
 
 - Linted unit tests
 
-## Version 1.0.4
+## v1.0.4
 
 - Added `_imf_wait_time` variable for enhanced rate limit support
 
-## Version 1.0.3
+## v1.0.3
 
 - Addressed bandwidth limit
 
-## Version 1.0.2
+## v1.0.2
 
 - Fixed Python 3.11 async-related incompatibility problem
 
-## Version 1.0.1
+## v1.0.1
 
 - README update
 
-## Version 1.0.0
+## v1.0.0
 
 - Initial release of the first complete Python library for comprehensive access to the IMF API
