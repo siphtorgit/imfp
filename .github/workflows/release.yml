@@ -33,7 +33,7 @@ jobs:
       - name: Build project wheel and test that it installs without errors
         run: |
           uv build
-          uv sync
+          uv sync --extra dev
           uv pip install dist/imfp-*.whl
 
       - name: Run tests
