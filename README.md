@@ -1,6 +1,6 @@
 # imfp
 
-[![Tests](https://github.com/chriscarrollsmith/imfp/actions/workflows/test.yml/badge.svg)](https://github.com/chriscarrollsmith/imfp/actions/workflows/test.yml)
+[![Tests](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/test.yml/badge.svg)](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/test.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/imfp.svg)](https://pypi.python.org/pypi/imfp)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -47,21 +47,11 @@ We welcome contributions to improve `imfp`! Here's how you can help:
 
 1. If you find a bug, please open an issue
 2. To fix a bug:
-   - Fork the repository
-   - Create a fix
+   - Fork and clone the repository and open a terminal in the repository directory
+   - Install a git hook to enforce conventional commits with `curl -o- https://raw.githubusercontent.com/tapsellorg/conventional-commits-git-hook/master/scripts/install.sh | sh`
+   - Create a fix, commit it with an ["Angular-style Conventional Commit"](https://www.conventionalcommits.org/en/v1.0.0-beta.4/) message, and push it to your fork
    - Open a pull request to our `main` branch
 
-Note that you will need to install the [uv](https://astr) package manager to install the dependencies and run the tests, and the [Quarto CLI tool](https://quarto.org/docs/download/) to render the documentation.
+Note that you will need to install the [uv](https://astral.sh/setup-uv/) package manager to install the dependencies and run the tests, and the [Quarto CLI tool](https://quarto.org/docs/download/) to render the documentation.
 
-## Maintainers
-
-To deploy a new version:
-
-1. Increment version in `pyproject.toml`
-2. Update dependencies with `uv lock --upgrade-package dependency_name` for each dependency
-3. Run tests with `uv run pytest tests`
-4. Update documentation if needed
-5. Push to issue branch
-6. Open PR to main
-
-The GitHub Actions workflow will handle code formatting and testing, documentation rendering and publishing, and release to PyPI after the merge.
+Note that version incrementing, package building, testing, changelog generation, documentation rendering, publishing to PyPI, and Github release creation is handled automatically by the GitHub Actions workflow based on the commit messages.
