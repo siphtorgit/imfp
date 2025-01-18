@@ -12,11 +12,19 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token for version incrementer app
+        id: create_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Setup | Checkout Repository at workflow sha
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.sha }}
+          token: ${{ steps.create_token.outputs.token }}
 
       - name: Setup | Force correct release branch on workflow sha
         run: |
