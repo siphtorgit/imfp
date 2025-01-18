@@ -32,7 +32,7 @@ repository = "https://github.com/Promptly-Technologies-LLC/imfp"
 requires = ["setuptools>=75"]
 build-backend = "setuptools.build_meta"
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "responses == 0.23.3",
     "pytest == 7.4.4",
@@ -59,7 +59,7 @@ repo_dir = "."
 no_git_verify = false
 tag_format = "v{version}"
 version_toml = [
-    "pyproject.toml:project.version
+    "pyproject.toml:project.version"
 ]
 
 [tool.semantic_release.branches.main]
@@ -113,4 +113,3 @@ insecure = false
 [tool.semantic_release.publish]
 dist_glob_patterns = ["dist/*"]
 upload_to_vcs_release = true
-
