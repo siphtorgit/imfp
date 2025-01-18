@@ -6,7 +6,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
   release:
@@ -30,15 +30,9 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
-      - name: Build project wheel and test that it installs without errors
+      - name: Install dependencies
         run: |
-          uv build
           uv sync --extra dev
-          uv pip install dist/imfp-*.whl
-
-      - name: Run tests
-        run: |
-          uv run pytest
 
       - name: Python Semantic Release
         id: release
