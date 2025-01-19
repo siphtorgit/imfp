@@ -5,7 +5,7 @@ title: "imfp"
 
 # imfp
 
-[![Tests](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/main.yml/badge.svg)](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/main.yml)
+[![Tests](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/test.yml/badge.svg)](https://github.com/Promptly-Technologies-LLC/imfp/actions/workflows/test.yml)
 [![PyPI Version](https://img.shields.io/pypi/v/imfp.svg)](https://pypi.python.org/pypi/imfp)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
