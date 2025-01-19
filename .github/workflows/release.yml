@@ -74,6 +74,6 @@ jobs:
       - name: Commit version change
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Release ${{ steps.release.outputs.tag }}"
+          commit_message: "Release ${{ steps.release.outputs.tag }} [skip ci]"
           branch: ${{ github.ref_name }}
           file_pattern: "pyproject.toml"
