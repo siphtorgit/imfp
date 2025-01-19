@@ -4,12 +4,23 @@ project:
 
 website:
   title: "imfp"
+  search: true
   navbar:
     left:
       - href: index.qmd
         text: Home
-      - href: docs/demo.qmd
-        text: Demo
+      - text: "Docs"
+        menu:
+          - text: "Installation"
+            href: docs/installation.qmd
+          - text: "Usage"
+            href: docs/usage.qmd
+          - text: "Parameters"
+            href: docs/parameters.qmd
+          - text: "Rate Limits"
+            href: docs/rate-limits.qmd
+          - text: Demo
+            href: docs/demo.qmd
     right:
       - icon: github
         href: https://github.com/Promptly-Technologies-LLC/imfp
@@ -23,3 +34,4 @@ format:
   html:
     theme: cosmo
     toc: true
+    code-fold: true
