@@ -1,0 +1,45 @@
+---
+title: "Datasets"
+---
+
+#### The Parameters Argument Workflow
+
+To supply a list object, modify each data frame in the `params` list object to retain only the rows you want, and then supply the modified list object to `imfp.imf_dataset` as its parameters argument. Here is how to make the same request for annual coal price data using a parameters list:
+
+``` {python}
+# Fetch the 'freq' input code for annual frequency
+params['freq'] = params['freq'][params['freq']['description'].str.contains("Annual")]
+
+# Fetch the 'commodity' input code(s) for coal
+params['commodity'] = params['commodity'][params['commodity']['description'].str.contains("Coal")]
+
+# Fetch the 'unit_measure' input code for index
+params['unit_measure'] = params['unit_measure'][params['unit_measure']['description'].str.contains("Index")]
+
+# Request data from the API
+df = imfp.imf_dataset(database_id = "PCPS",
+         parameters = params,
+         start_year = 2000, end_year = 2015)
+
+# Display the first few entries in the retrieved data frame
+df.head()
+```
+
+## Understanding the Data Frame
+
+Also note that the returned data frame has mysterious-looking codes as values in some columns.
+
+Codes in the `time_format` column are ISO 8601 duration codes. In this case, “P1Y” means “periods of 1 year.” The `unit_mult` column represents the number of zeroes you should add to the value column. For instance, if value is in millions, then the unit multiplier will be 6. If in billions, then the unit multiplier will be 9.
+
+The meanings of the other codes are stored in our `params` object and can be fetched with a join. For instance to fetch the meaning of the `ref_area` code “W00”, we can perform a left join with the `params['ref_area']` data frame and use select to replace `ref_area` with the parameter description:
+
+``` {python}
+# Join df with params['ref_area'] to fetch code description
+df = df.merge(params['ref_area'], left_on='ref_area',right_on='input_code',how='left')
+
+# Drop redundant columns and rename description column
+df = df.drop(columns=['ref_area','input_code']).rename(columns={"description":"ref_area"})
+
+# View first few columns in the modified data frame
+df.head()
+```

@@ -1,0 +1,48 @@
+---
+title: "Installation"
+---
+
+## Basic Installation
+
+To install the stable version of imfp from PyPi using pip:
+
+```bash
+pip install -q --upgrade imfp
+```
+
+You can then import the package in your Python script:
+
+```python
+import imfp
+```
+
+## Dependencies for Data Analysis
+
+`imfp` outputs data in a `pandas` data frame, so you will want to use the `pandas` package for its functions for viewing and manipulating this object type. For data analysis and visualization, we recommend installing these additional packages:
+
+```bash
+pip install -q pandas matplotlib seaborn numpy
+```
+
+You can then import them in your Python script:
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+```
+
+## Development Installation
+
+If you want to contribute to `imfp` development:
+
+1. Fork and clone the repository
+2. Install [uv](https://astral.sh/setup-uv/) with `curl -LsSf https://astral.sh/uv/install.sh | sh`
+3. Install the dependencies with `uv sync --extra dev`
+4. Install the git hook for conventional commits:
+   ```bash
+   curl -o- https://raw.githubusercontent.com/tapsellorg/conventional-commits-git-hook/master/scripts/install.sh | sh
+   ```
+
+For documentation development, you'll also need to install the [Quarto CLI tool](https://quarto.org/docs/download/).
