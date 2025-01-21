@@ -2,46 +2,73 @@
 title: "Working with Parameters"
 ---
 
-## Understanding IMF Database Parameters
+## Filtering IMF Dataset Requests
 
-The IMF API uses a parameter-based system for querying data. Each database has its own set of parameters that can be used to filter and specify the data you want to retrieve. There are two main functions for working with parameters:
+Once you have a `database_id`, it’s possible to make a call to `imfp.imf_dataset` to fetch the entire database: `imfp.imf_dataset(database_id)`. However, while this will succeed for a few small databases, it will fail for all of the larger ones. And even in the rare case when it succeeds, fetching an entire database can take a long time. You’re much better off supplying additional filter parameters to reduce the size of your request.
+
+Requests to databases available through the IMF API are complicated by the fact that each database uses a different set of parameters when making a request. (At last count, there were 43 unique parameters used in making API requests from the various databases!) You also have to have the list of valid input codes for each parameter. The `imfp.imf_parameters` function solves this problem. Use the function to obtain the full list of parameters and valid input codes for a given database.
+
+## Understanding Filter Parameters
+
+Each database available through the IMF API has its own set of parameters that can be used to filter and specify the data you want to retrieve.
+
+Each parameter will be a column in the data. Each row in the data will contain a value for that parameter. The parameter will always be a categorical variable, meaning that it can take only a limited set of values. We refer to these values as "input codes," because you can input them in your API request to filter the data.
+
+What this means, though, is that before making an API request to retrieve data, you need to know what the available filtering parameters are for the database, and what codes you can use for filtering the data by each parameter.
+
+There are two main functions for working with parameters:
 
 - `imf_parameters()`: Get the full list of parameters and valid input codes for a database
-- `imf_parameter_defs()`: Get text descriptions of what each parameter means
+- `imf_parameter_defs()`: Get text descriptions of what each parameter represents
 
 ## Discovering Available Parameters
 
 To get started, you'll need to know what parameters are available for your chosen database. Use `imf_parameters()` to get this information:
 
-```python
+``` {python}
+import imfp
+
 # Fetch list of valid parameters for the Primary Commodity Price System database
 params = imfp.imf_parameters("PCPS")
 
 # View the available parameter names
 print(params.keys())
-
-# Get descriptions of what each parameter means
-imfp.imf_parameter_defs("PCPS")
 ```
 
-Each parameter in the returned dictionary contains a data frame with:
+The function returns a dictionary of data frames. Each key in the dictionary corresponds to a parameter used in making requests from the database. The value for each key is a data frame with:
+
 - `input_code`: The valid codes you can use for that parameter
-- `description`: What each code represents
+- `description`: A short text description of what each code represents
 
-For example, to see the valid frequency codes:
+For example, to see the valid codes for the `freq` (frequency) parameter:
 
-```python
+``` {python}
 # View the data frame of valid input codes for the frequency parameter
-params['freq']
+print(params['freq'])
 ```
 
-## Two Ways to Supply Parameters
+## Parameter Definitions
 
-### 1. List Arguments (Recommended for Beginners)
+If the parameter name is not self-explanatory, you can use the `imf_parameter_defs()` function to get a text description of what each parameter represents.
 
-Supply parameters directly as arguments to `imf_dataset`:
+``` {python}
+# Get descriptions of what each parameter means
+params_defs = imfp.imf_parameter_defs("PCPS")
 
-```python
+print(params_defs)
+```
+
+## Supplying Parameters
+
+### Basic Approach (Recommended for Most Users)
+
+To make a request to fetch data from the IMF API, just call `imfp.imf_dataset` with the database ID and keyword arguments for each parameter, where the keyword argument name is the parameter name and the value is the list of codes you want.
+
+For instance, on exploring the `freq` parameter of the Primary Commodity Price System database above, we found that the frequency can take one of three values: "A" for annual, "Q" for quarterly, and "M" for monthly. Thus, to request annual data, we can call `imfp.imf_dataset` with `freq = ["A"]`.
+
+Here's a complete example that fetches annual coal prices for the years 2000 through 2015:
+
+``` {python}
 # Example: Get annual coal prices
 df = imfp.imf_dataset(
     database_id="PCPS",
@@ -52,132 +79,120 @@ df = imfp.imf_dataset(
 )
 ```
 
-### 2. Parameters Dictionary (More Concise)
+### Advanced Approaches
 
-Modify the parameters dictionary and pass it to `imf_dataset`:
+For more complex queries, there are two programmatic ways to supply parameters to `imfp.imf_dataset`. These approaches are particularly useful when you need to filter parameters based on their descriptions or when working with multiple parameter values.
 
-```python
-# Filter the parameters dictionary
-params['freq'] = params['freq'][params['freq']['description'].str.contains("Annual")]
-params['commodity'] = params['commodity'][params['commodity']['description'].str.contains("Coal")]
+#### 1. List Arguments with Parameter Filtering
 
-# Pass the modified dictionary
+This approach uses string matching to find the correct parameter codes before passing them to `imf_dataset`:
+
+``` {python}
+# Fetch the input code column of the freq parameter...
+selected_freq = list(
+    params['freq']['input_code'][
+        # ...where the description contains "Annual"
+        params['freq']['description'].str.contains("Annual")
+    ]
+)
+
+# Fetch the input code column of the commodity parameter...
+selected_commodity = list(
+    params['commodity']['input_code'][
+        # ...where the description contains "Coal"
+        params['commodity']['description'].str.contains("Coal")
+    ]
+)
+
+# Fetch the input code column of the unit_measure parameter...
+selected_unit_measure = list(
+    params['unit_measure']['input_code'][
+        # ...where the description contains "Index"
+        params['unit_measure']['description'].str.contains("Index")
+    ]
+)
+
+# Request data from the API using the filtered parameter code lists
 df = imfp.imf_dataset(
     database_id="PCPS",
-    parameters=params,
+    freq=selected_freq,
+    commodity=selected_commodity,
+    unit_measure=selected_unit_measure,
     start_year=2000,
     end_year=2015
 )
 ```
 
-## Understanding Return Values
+#### 2. Parameters Dictionary Approach
 
-The returned data frame will contain columns corresponding to your parameters, plus:
+This approach modifies the parameters dictionary directly and passes the entire filtered dictionary to `imf_dataset` as a single `parameters` keyword argument. This is more concise but requires understanding how the parameters dictionary works:
 
-- `time_format`: ISO 8601 duration codes (e.g., "P1Y" means "periods of 1 year")
-- `unit_mult`: Number of zeros to add to values (e.g., 6 for millions, 9 for billions)
+``` {python}
+# Copy the params dictionary
+modified_params = params.copy()
 
-You can decode parameter values using the original parameters dictionary:
+# Overwrite the data frame for each parameter in the dictionary with filtered rows
+modified_params['freq'] = params['freq'][
+    # ...where the input code description for freq contains "Annual"
+    params['freq']['description'].str.contains("Annual")
+]
+modified_params['commodity'] = params['commodity'][
+    # ...where the input code description for commodity contains "Coal"
+    params['commodity']['description'].str.contains("Coal")
+]
+modified_params['unit_measure'] = params['unit_measure'][
+    # ...where the input code description for unit_measure contains "Index"
+    params['unit_measure']['description'].str.contains("Index")
+]
 
-```python
-# Example: Decode reference area codes
+# Pass the modified dictionary to imf_dataset
+df = imfp.imf_dataset(
+    database_id="PCPS",
+    parameters=modified_params,
+    start_year=2000,
+    end_year=2015
+)
+```
+
+Note that when using the parameters dictionary approach, you cannot combine it with individual parameter arguments. If you supply a `parameters` argument, any other keyword arguments for individual parameters will be ignored.
+
+## Decoding Returned Data
+
+When you retrieve data using `imfp.imf_dataset`, the returned data frame contains columns that correspond to the parameters you specified in your request. However, these columns use input codes (short identifiers) rather than human-readable descriptions. To make your data more interpretable, you can replace these codes with their corresponding text descriptions using the parameter information from `imfp.imf_parameters`, so that codes like "A" (Annual) or "W00" (World) become self-explanatory labels.
+
+For example, suppose we want to decode the `freq` (frequency), `ref_area` (geographical area), and `unit_measure` (unit) columns in our dataset. We'll merge the parameter descriptions into our data frame:
+
+``` {python}
+# Decode frequency codes (e.g., "A" → "Annual")
 df = df.merge(
-    params['ref_area'], 
+    # Select code-description pairs
+    params['freq'][['input_code', 'description']],
+    # Match codes in the data frame
+    left_on='freq',
+    # ...to codes in the parameter data
+    right_on='input_code',
+    # Keep all data rows
+    how='left'
+).drop(columns=['freq', 'input_code']
+).rename(columns={"description": "freq"})
+
+# Decode geographic area codes (e.g., "W00" → "World")
+df = df.merge(
+    params['ref_area'][['input_code', 'description']],
     left_on='ref_area',
     right_on='input_code',
     how='left'
-).drop(columns=['ref_area','input_code']).rename(columns={"description":"ref_area"})
+).drop(columns=['ref_area', 'input_code']
+).rename(columns={"description":"ref_area"})
+
+# Decode unit codes (e.g., "IX" → "Index")
+df = df.merge(
+    params['unit_measure'][['input_code', 'description']],
+    left_on='unit_measure',
+    right_on='input_code',
+    how='left'
+).drop(columns=['unit_measure', 'input_code']
+).rename(columns={"description":"unit_measure"})
 ```
 
-### Fetching a List of Parameters and Input Codes with `imf_parameters` and `imf_parameter_defs`
-
-Once you have a `database_id`, it’s possible to make a call to `imfp.imf_dataset` to fetch the entire database: `imfp.imf_dataset(database_id)`. However, while this will succeed for a few small databases, it will fail for all of the larger ones. And even in the rare case when it succeeds, fetching an entire database can take a long time. You’re much better off supplying additional filter parameters to reduce the size of your request.
-
-Requests to databases available through the IMF API are complicated by the fact that each database uses a different set of parameters when making a request. (At last count, there were 43 unique parameters used in making API requests from the various databases!) You also have to have the list of valid input codes for each parameter. The `imfp.imf_parameters` function solves this problem. Use the function to obtain the full list of parameters and valid input codes for a given database:
-
-``` {python}
-# Fetch list of valid parameters and input codes for commodity price database
-params = imfp.imf_parameters("PCPS")
-```
-
-The `imfp.imf_parameters` function returns a dictionary of data frames. Each dictionary key name corresponds to a parameter used in making requests from the database:
-
-``` {python}
-# Get key names from the params object
-params.keys()
-```
-
-In the event that a parameter name is not self-explanatory, the `imfp.imf_parameter_defs` function can be used to fetch short text descriptions of each parameter:
-
-``` {python}
-# Fetch and display parameter text descriptions for the commodity price database
-imfp.imf_parameter_defs("PCPS")
-```
-
-
-Each named list item is a data frame containing a vector of valid input codes that can be used with the named parameter, and a vector of text descriptions of what each code represents.
-
-To access the data frame containing valid values for each parameter, subset the `params` dict by the parameter name:
-
-``` {python}
-# View the data frame of valid input codes for the frequency parameter
-params['freq']
-```
-
-
-### Supplying Parameter Arguments to `imf_dataset`: A Tale of Two Workflows
-
-There are two ways to supply parameters to `imfp.imf_dataset`: by supplying list arguments or by supplying a modified parameters dict. The list arguments workflow will be more intuitive for most users, but the dict argument workflow requires a little less code.
-
-#### The List Arguments Workflow
-
-To supply list arguments, just find the codes you want and supply them to `imfp.imf_dataset` using the parameter name as the argument name. The example below shows how to request 2000–2015 annual coal prices from the Primary Commodity Price System database:
-
-``` {python}
-# Fetch the 'freq' input code for annual frequency
-selected_freq = list(
-    params['freq']['input_code'][params['freq']['description'].str.contains("Annual")]
-)
-
-# Fetch the 'commodity' input code for coal
-selected_commodity = list(
-    params['commodity']['input_code'][params['commodity']['description'].str.contains("Coal")]
-)
-
-# Fetch the 'unit_measure' input code for index
-selected_unit_measure = list(
-    params['unit_measure']['input_code'][params['unit_measure']['description'].str.contains("Index")]
-)
-
-# Request data from the API
-df = imfp.imf_dataset(database_id = "PCPS",
-         freq = selected_freq, commodity = selected_commodity,
-         unit_measure = selected_unit_measure,
-         start_year = 2000, end_year = 2015)
-
-# Display the first few entries in the retrieved data frame
-df.head()
-```
-
-#### The Parameters Argument Workflow
-
-To supply a list object, modify each data frame in the `params` list object to retain only the rows you want, and then supply the modified list object to `imfp.imf_dataset` as its parameters argument. Here is how to make the same request for annual coal price data using a parameters list:
-
-``` {python}
-# Fetch the 'freq' input code for annual frequency
-params['freq'] = params['freq'][params['freq']['description'].str.contains("Annual")]
-
-# Fetch the 'commodity' input code(s) for coal
-params['commodity'] = params['commodity'][params['commodity']['description'].str.contains("Coal")]
-
-# Fetch the 'unit_measure' input code for index
-params['unit_measure'] = params['unit_measure'][params['unit_measure']['description'].str.contains("Index")]
-
-# Request data from the API
-df = imfp.imf_dataset(database_id = "PCPS",
-         parameters = params,
-         start_year = 2000, end_year = 2015)
-
-# Display the first few entries in the retrieved data frame
-df.head()
-```
+After decoding, the data frame is much more human-interpretable. This transformation makes the data more accessible for analysis and presentation, while maintaining all the original information.
