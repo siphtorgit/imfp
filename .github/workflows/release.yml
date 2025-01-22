@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --extra dev
+          uv sync
 
       - name: Python Semantic Release
         id: release
@@ -52,7 +52,7 @@ jobs:
       - name: Build project wheel and test that it installs without errors
         run: |
           uv build
-          uv sync --extra dev
+          uv sync
           uv pip install dist/imfp-*.whl
 
       - name: Run tests

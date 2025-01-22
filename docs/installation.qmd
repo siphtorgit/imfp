@@ -51,7 +51,7 @@ To get started with development of `imfp`,
 
 1. Fork and clone the repository
 2. Install [uv](https://astral.sh/setup-uv/) with `curl -LsSf https://astral.sh/uv/install.sh | sh`
-3. Install the dependencies with `uv sync --extra dev`
+3. Install the dependencies with `uv sync`
 4. Install a git pre-commit hook to enforce conventional commits:
    ``` bash
    curl -o- https://raw.githubusercontent.com/tapsellorg/conventional-commits-git-hook/master/scripts/install.sh | sh
