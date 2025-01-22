@@ -4,7 +4,7 @@ title: "Datasets"
 
 ## Making a Request
 
-To retrieve data from an IMF database, you'll need the database ID and any relevant [filter parameters](docs/parameters.qmd). Here's a basic example using the Primary Commodity Price System (PCPS) database:
+To retrieve data from an IMF database, you'll need the database ID and any relevant [filter parameters](parameters.qmd). Here's a basic example using the Primary Commodity Price System (PCPS) database:
 
 ``` {python}
 import imfp

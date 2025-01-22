@@ -71,6 +71,13 @@ else:
 
 You can also functionalize this logic to permit reuse several times in the same script or notebook. See Jenny Xu's excellent [demo notebook](demo.qmd#utility-functions) for example caching functions.
 
+``` {python}
+#| include: false
+#| echo: false
+# Invisibly clean up parquet file
+os.remove(cache_path)
+```
+
 ## Performance Tips
 
 1. **Filter Early**: Use parameters to limit data at the API level

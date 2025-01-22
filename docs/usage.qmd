@@ -49,14 +49,20 @@ All data is returned from the IMF API as a text (object) data type, so you will 
 numeric_cols = ["unit_mult", "obs_value"]
 
 # Cast numeric columns
-df: pd.DataFrame = df.to_numeric(numeric_cols)
+df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric)
 ```
 
 You can also convert string columns to categorical types for better memory usage.
 ``` {python}
 # Convert categorical columns like ref_area and indicator to category type
-# This reduces memory usage for columns with repeated string values
-categorical_cols = ["ref_area", "indicator", "unit_measure"]
+categorical_cols = [
+  "freq",
+  "ref_area",
+  "commodity",
+  "unit_measure",
+  "time_format"
+]
+
 df[categorical_cols] = df[categorical_cols].astype("category")
 ```
 
@@ -77,7 +83,8 @@ You can use the `pandas` library's `to_datetime()` method with the `format="mixe
 
 ``` {python}
 # Convert time_period to datetime
-print(pd.to_datetime(df["time_period"], format="mixed").head())
+df["datetime"] = pd.to_datetime(df["time_period"], format="mixed")
+print(df[["freq", "datetime"]].head())
 ```
 
 Alternatively, you can split the `time_period` column into separate columns for year, quarter, and month, and then convert each to a numeric value:
