@@ -1,0 +1,200 @@
+---
+title: "Rate Limits"
+---
+
+## API Rate Management
+
+### Setting Application Name
+
+While not strictly required, it's best practice to set a unique application name to avoid application-based rate limits. This is done with the `set_imf_app_name()` function:
+
+``` {python}
+imfp.set_imf_app_name("my_economic_analysis_app")
+```
+
+### Managing Request Timing
+
+If making multiple requests in a short period of time, you may want to increase the wait time between requests to avoid hitting the API's rate limits. This is done with the `set_imf_wait_time()` function:
+
+``` {python}
+# Default 1.5 second wait between calls
+imfp.set_imf_wait_time(1.5)
+
+# Increase wait time for parallel processing
+imfp.set_imf_wait_time(5)
+```
+
+## Data Workflow Best Practices
+
+### 1. Caching Strategy
+
+Cache frequently accessed data to reduce API calls:
+
+``` {python}
+def cached_imf_data(database_id, cache_dir="data_cache"):
+    cache_path = f"{cache_dir}/{database_id}.parquet"
+    if os.path.exists(cache_path):
+        return pd.read_parquet(cache_path)
+    else:
+        data = imfp.imf_dataset(database_id)
+        os.makedirs(cache_dir, exist_ok=True)
+        data.to_parquet(cache_path)
+        return data
+```
+
+### 2. Batch Processing
+
+For large datasets, process in smaller batches:
+
+``` {python}
+def batch_fetch(database_id, batch_size=1000):
+    params = imfp.imf_parameters(database_id)
+    total_records = params['record_count']
+    
+    for start in range(0, total_records, batch_size):
+        yield imfp.imf_dataset(
+            database_id,
+            start_period=start,
+            end_period=start + batch_size - 1
+        )
+```
+
+### 3. Data Validation
+Always validate your API responses:
+
+``` {python}
+def validate_response(df):
+    if df.empty:
+        raise ValueError("Empty DataFrame returned")
+    if 'error' in df.columns:
+        raise ValueError(f"API Error: {df['error'].iloc[0]}")
+    return df
+```
+
+## Error Handling
+
+`imfp` automatically handles rate limits with exponential backoff:
+
+1. Waits for specified time
+2. Retries the request
+3. Increases wait time exponentially on subsequent failures
+4. Stops after 3 attempts (default)
+
+You can modify retry behavior:
+
+``` {python}
+# Custom retry settings (not recommended above 3)
+df = imfp.imf_dataset("IFS", times=3)
+```
+
+## Performance Tips
+
+1. **Filter Early**: Use parameters to limit data at the API level
+2. **Parallelize Carefully**: Increase wait times when running parallel processes
+3. **Monitor Usage**: Keep track of your API call patterns
+4. **Use Efficient Formats**: Store cached data in parquet or feather formats
+5. **Validate Data**: Check for errors and empty responses
+
+## Example Workflow
+
+Here's a complete example demonstrating these best practices:
+
+``` {python}
+# Setup
+imfp.set_imf_app_name("economic_analysis")
+imfp.set_imf_wait_time(2)
+
+# Fetch and cache data
+if not os.path.exists("data/gdp.parquet"):
+    gdp_data = imfp.imf_dataset("IFS", indicator="NGDP_XDC")
+    gdp_data.to_parquet("data/gdp.parquet")
+else:
+    gdp_data = pd.read_parquet("data/gdp.parquet")
+
+# Process in batches
+for batch in batch_fetch("IFS", batch_size=5000):
+    process_batch(batch)
+
+# Analyze and visualize
+gdp_data.groupby('country')['value'].mean().plot(kind='bar')
+plt.title('Average GDP by Country')
+plt.show()
+```
+
+## Understanding IMF API Rate Limits
+
+The IMF API has an application-based rate limit of 50 requests per second. Each application is identified by the "user_agent" variable in the request header. By default, all `imfp` users share the same application name, which could lead to rate limit issues if many users are making requests simultaneously.
+
+## Setting a Custom Application Name
+
+To avoid hitting rate limits, you should set a unique application name for your requests:
+
+``` {python}
+imfp.set_imf_app_name("my_custom_app_name")
+```
+
+The `set_imf_app_name()` function:
+- Sets the application name in the `IMF_APP_NAME` environment variable
+- Creates the variable if it doesn't exist
+- Validates that the name is:
+  - Not missing
+  - A string
+  - Less than 255 characters
+  - Not the default "imfr" name
+
+## Managing Wait Times Between Calls
+
+### Default Behavior
+
+By default, `imfp`:
+- Enforces a 1.5-second wait between API calls
+- Retries failed calls up to 3 times
+- Uses exponential backoff starting at 5 seconds for retries
+
+### Customizing Wait Time
+
+If you're running parallel processes or experiencing rate limit issues, you can increase the wait time:
+
+``` {python}
+# Example: Set a 5-second wait time between calls
+imfp.set_imf_wait_time(5)
+```
+
+## Best Practices
+
+1. **Use a Unique App Name**: Always set a custom application name for your project
+2. **Filter Requests**: Use parameters to limit the data you're requesting
+3. **Batch Processing**: For large datasets, consider breaking requests into smaller batches
+4. **Monitor Responses**: Watch for rate limit errors and adjust wait times if needed
+5. **Parallel Processing**: If running parallel processes, increase the wait time accordingly
+
+## Error Handling
+
+When a rate limit is hit, `imfp`:
+1. Automatically waits for the specified time
+2. Retries the request
+3. Increases wait time exponentially on subsequent failures
+4. Stops after 3 attempts (by default)
+
+You can modify retry behavior by setting the `times` argument in API calls, though increasing it beyond 3 is not recommended due to the exponential backoff.
+
+## Rate and Bandwidth Limit Management
+
+### Setting a Unique Application Name with `set_imf_app_name`
+
+`imfp.set_imf_app_name()` allows users to set a custom application name to be used when making API calls to the IMF API. The IMF API has an application-based rate limit of 50 requests per second, with the application identified by the "user_agent" variable in the request header.
+
+This could prove problematic if the `imfp` library became too popular and too many users tried to make simultaneous API requests using the default app name. By setting a custom application name, users can avoid hitting rate limits and being blocked by the API. `imfp.set_imf_app_name()` sets the application name by changing the `IMF_APP_NAME` variable in the environment. If this variable doesn't exist, `imfp.set_imf_app_name()` will create it.
+
+To set a custom application name, simply call the `imfp.set_imf_app_name()` function with your desired application name as an argument:
+
+``` {python}
+# Set custom app name as an environment variable
+imfp.set_imf_app_name("my_custom_app_name")
+```
+
+The function will throw an error if the provided name is missing, NULL, NA, not a string, or longer than 255 characters. If the provided name is "imfr" (the default) or an empty string, the function will issue a warning recommending the use of a unique app name to avoid hitting rate limits.
+
+### Changing the enforced wait time between API calls with `set_imf_wait_time`
+
+By default, `imfp` enforces a mandatory 1.5-second wait time between API calls to prevent repeated or recursive calls from exceeding the API's bandwidth/rate limit. This wait time should be sufficient for most applications. However, if you are running parallel processes using `imfp` (e.g. during cross-platform testing), this wait time may be insufficient to prevent you from running up against the API's rate and bandwidth limits. You can change this wait time by calling the `set_imf_wait_time`

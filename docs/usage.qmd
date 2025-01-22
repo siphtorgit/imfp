@@ -2,131 +2,119 @@
 title: "Suggestions for Usage"
 ---
 
-## Usage
+## Working with Large Data Frames
 
-### Suggested packages
+### Inspecting Data
 
-`imfp` outputs data in a `pandas` data frame, so you will want to use the `pandas` package for its functions for viewing and manipulating this object type. We also recommend `matplotlib` or `seaborn` for making plots, and `numpy` for computation. These packages can be installed using `pip` and loaded using `import`:
+`imfp` outputs data in `pandas` DataFrames, so you will want to use the `pandas` package for its functions for viewing and manipulating this object type.
 
-```bash
-pip install -q pandas matplotlib seaborn numpy
-```
+For large datasets, you can use the `pandas` library's `info()` method to get a quick summary of the data frame, including the number of rows and columns, the count of non-missing values, the column names, and the data types.
 
 ``` {python}
+import imfp
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
+
+df: pd.DataFrame = imfp.imf_dataset(
+    database_id="PCPS",
+    commodity=["PCOAL"],
+    unit_measure=["IX"],
+    start_year=2000, end_year=2001
+)
+
+# Quick summary of DataFrame
+df.info()
 ```
 
-### Working with Large Data Frames
+Alternatively, you can use the `head()` method to view the first 5 rows of the data frame.
 
-### Viewing Data Frames
+``` {python}
+# View first 5 rows of DataFrame
+df.head()
+```
 
-Note that `pandas` data frames in Python can be a little difficult to work with, because Python doesn't have a built-in variable explorer. If you're doing data science, I recommend using an IDE like RStudio or Spyder that has a built-in variable explorer. However, if you don't have a variable explorer, you can prevent Python from truncating data frames using the `options` in `pandas`. For instance, to increase the maximum allowed column width to 100 characters, we can use `pandas.options.display.max_colwidth = 100`.
+### Cleaning Data
 
-Alternatively, it's possible to open the data frame in a new window to view it in full:
+All data is returned from the IMF API as a text (object) data type, so you will want to cast numeric columns to numeric.
+
+``` {python}
+# Numeric columns
+numeric_cols = ["unit_mult", "obs_value"]
+
+# Cast numeric columns
+df: pd.DataFrame = df.to_numeric(numeric_cols)
+```
+
+You can also convert string columns to categorical types for better memory usage.
+``` {python}
+# Convert categorical columns like ref_area and indicator to category type
+# This reduces memory usage for columns with repeated string values
+categorical_cols = ["ref_area", "indicator", "unit_measure"]
+df[categorical_cols] = df[categorical_cols].astype("category")
+```
+
+After conversion, you may want to drop any rows with missing values.
+
+``` {python}
+# Drop rows with missing values
+df = df.dropna()
+```
+
+The `time_period` column can be more difficult to work with, because it may be differently formatted depending on the frequency of the data.
+
+Annual data will be formatted as a four-digit year, such as "2000", which can be trivially converted to numeric.
+
+However, quarterly data will be formatted as "2000-Q1", and monthly data will be formatted like "2000-01".
+
+You can use the `pandas` library's `to_datetime()` method with the `format="mixed"` argument to convert this column to a datetime object in a format-agnostic way:
+
+``` {python}
+# Convert time_period to datetime
+print(pd.to_datetime(df["time_period"], format="mixed").head())
+```
+
+Alternatively, you can split the `time_period` column into separate columns for year, quarter, and month, and then convert each to a numeric value:
+
+``` {python}
+# Split time_period into separate columns
+df["year"] = df["time_period"].str.extract(r"(\d{4})")[0]
+df["quarter"] = df["time_period"].str.extract(r"Q(\d{1})")[0]
+df["month"] = df["time_period"].str.extract(r"-(\d{2})")[0]
+
+# Convert year, quarter, and month to numeric
+df["year"] = pd.to_numeric(df["year"])
+df["quarter"] = pd.to_numeric(df["quarter"])
+df["month"] = pd.to_numeric(df["month"])
+
+print(df[["time_period", "year", "quarter", "month"]].head(5))
+```
+
+### Summarizing Data
+
+After converting columns to numeric, you can use the `describe()` function to get a quick summary of the statistical properties of these, including the count of rows, the mean, the standard deviation, the minimum and maximum values, and the quartiles.
+
+``` {python}
+# Statistical summary
+df.describe()
+```
+
+### Viewing Data
+
+For large data frames, it can be useful to view the data in a browser window. To facilitate this, you can define a `View()` function as follows. This function will save the data frame to a temporary HTML file and open it in your default web browser.
 
 ``` {python}
 #| eval: false
-import imfp
 import tempfile
 import webbrowser
 
 # Define a simple function to view data frame in a browser window
-def View(df):
+def View(df: pd.DataFrame):
     html = df.to_html()
-    with tempfile.NamedTemporaryFile('w', delete=False, suffix='.html') as f:
+    with tempfile.NamedTemporaryFile('w', 
+    delete=False, suffix='.html') as f:
         url = 'file://' + f.name
         f.write(html)
     webbrowser.open(url)
 
-# Open data frame in a new browser window using the function
-df = imfp.imf_databases()
+# Call the function
 View(df)
 ```
-
-Or you might consider chatting with your large dataframe via [pandasAI](https://github.com/Sinaptik-AI/pandas-ai).
-
-### Caching Data
-
-## Understanding IMF API Rate Limits
-
-The IMF API has an application-based rate limit of 50 requests per second. Each application is identified by the "user_agent" variable in the request header. By default, all `imfp` users share the same application name, which could lead to rate limit issues if many users are making requests simultaneously.
-
-## Setting a Custom Application Name
-
-To avoid hitting rate limits, you should set a unique application name for your requests:
-
-```python
-imfp.set_imf_app_name("my_custom_app_name")
-```
-
-The `set_imf_app_name()` function:
-- Sets the application name in the `IMF_APP_NAME` environment variable
-- Creates the variable if it doesn't exist
-- Validates that the name is:
-  - Not missing
-  - A string
-  - Less than 255 characters
-  - Not the default "imfr" name
-
-## Managing Wait Times Between Calls
-
-### Default Behavior
-
-By default, `imfp`:
-- Enforces a 1.5-second wait between API calls
-- Retries failed calls up to 3 times
-- Uses exponential backoff starting at 5 seconds for retries
-
-### Customizing Wait Time
-
-If you're running parallel processes or experiencing rate limit issues, you can increase the wait time:
-
-```python
-# Example: Set a 5-second wait time between calls
-imfp.set_imf_wait_time(5)
-```
-
-## Best Practices
-
-1. **Use a Unique App Name**: Always set a custom application name for your project
-2. **Filter Requests**: Use parameters to limit the data you're requesting
-3. **Batch Processing**: For large datasets, consider breaking requests into smaller batches
-4. **Monitor Responses**: Watch for rate limit errors and adjust wait times if needed
-5. **Parallel Processing**: If running parallel processes, increase the wait time accordingly
-
-## Error Handling
-
-When a rate limit is hit, `imfp`:
-1. Automatically waits for the specified time
-2. Retries the request
-3. Increases wait time exponentially on subsequent failures
-4. Stops after 3 attempts (by default)
-
-You can modify retry behavior by setting the `times` argument in API calls, though increasing it beyond 3 is not recommended due to the exponential backoff.
-
-
-## Rate and Bandwidth Limit Management
-
-### Setting a Unique Application Name with `set_imf_app_name`
-
-`imfp.set_imf_app_name()` allows users to set a custom application name to be used when making API calls to the IMF API. The IMF API has an application-based rate limit of 50 requests per second, with the application identified by the "user_agent" variable in the request header.
-
-This could prove problematic if the `imfp` library became too popular and too many users tried to make simultaneous API requests using the default app name. By setting a custom application name, users can avoid hitting rate limits and being blocked by the API. `imfp.set_imf_app_name()` sets the application name by changing the `IMF_APP_NAME` variable in the environment. If this variable doesn't exist, `imfp.set_imf_app_name()` will create it.
-
-To set a custom application name, simply call the `imfp.set_imf_app_name()` function with your desired application name as an argument:
-
-``` {python}
-# Set custom app name as an environment variable
-imfp.set_imf_app_name("my_custom_app_name")
-```
-
-The function will throw an error if the provided name is missing, NULL, NA, not a string, or longer than 255 characters. If the provided name is "imfr" (the default) or an empty string, the function will issue a warning recommending the use of a unique app name to avoid hitting rate limits.
-
-### Changing the enforced wait time between API calls with `set_imf_wait_time`
-
-By default, `imfp` enforces a mandatory 1.5-second wait time between API calls to prevent repeated or recursive calls from exceeding the API's bandwidth/rate limit. This wait time should be sufficient for most applications. However, if you are running parallel processes using `imfp` (e.g. during cross-platform testing), this wait time may be insufficient to prevent you from running up against the API's rate and bandwidth limits. You can change this wait time by calling the `set_imf_wait_time` function with a numeric value, in seconds. For instance, to enforce a five-second wait time between API calls, use `set_imf_wait_time(10)`.
-
-Also note that by default, `imfp` functions will retry any API call rejected for bandwidth or rate limit reasons. The number of times `imfp` will attempt the call is set by the `times` argument, with a default value of 3. (With this value, requests will be retried twice after an initial failure.) Note that `imfp` enforces an exponentially increasing wait time between function calls, with a base wait time of 5 seconds on the first retry, so it is not recommended to set a high value for `times`.

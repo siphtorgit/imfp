@@ -2,7 +2,7 @@
 title: "Working with Parameters"
 ---
 
-## Filtering IMF Dataset Requests
+## Filtering IMF Dataset Requests with Parameters
 
 Once you have a `database_id`, it’s possible to make a call to `imfp.imf_dataset` to fetch the entire database: `imfp.imf_dataset(database_id)`. However, while this will succeed for a few small databases, it will fail for all of the larger ones. And even in the rare case when it succeeds, fetching an entire database can take a long time. You’re much better off supplying additional filter parameters to reduce the size of your request.
 
@@ -156,43 +156,3 @@ df = imfp.imf_dataset(
 
 Note that when using the parameters dictionary approach, you cannot combine it with individual parameter arguments. If you supply a `parameters` argument, any other keyword arguments for individual parameters will be ignored.
 
-## Decoding Returned Data
-
-When you retrieve data using `imfp.imf_dataset`, the returned data frame contains columns that correspond to the parameters you specified in your request. However, these columns use input codes (short identifiers) rather than human-readable descriptions. To make your data more interpretable, you can replace these codes with their corresponding text descriptions using the parameter information from `imfp.imf_parameters`, so that codes like "A" (Annual) or "W00" (World) become self-explanatory labels.
-
-For example, suppose we want to decode the `freq` (frequency), `ref_area` (geographical area), and `unit_measure` (unit) columns in our dataset. We'll merge the parameter descriptions into our data frame:
-
-``` {python}
-# Decode frequency codes (e.g., "A" → "Annual")
-df = df.merge(
-    # Select code-description pairs
-    params['freq'][['input_code', 'description']],
-    # Match codes in the data frame
-    left_on='freq',
-    # ...to codes in the parameter data
-    right_on='input_code',
-    # Keep all data rows
-    how='left'
-).drop(columns=['freq', 'input_code']
-).rename(columns={"description": "freq"})
-
-# Decode geographic area codes (e.g., "W00" → "World")
-df = df.merge(
-    params['ref_area'][['input_code', 'description']],
-    left_on='ref_area',
-    right_on='input_code',
-    how='left'
-).drop(columns=['ref_area', 'input_code']
-).rename(columns={"description":"ref_area"})
-
-# Decode unit codes (e.g., "IX" → "Index")
-df = df.merge(
-    params['unit_measure'][['input_code', 'description']],
-    left_on='unit_measure',
-    right_on='input_code',
-    how='left'
-).drop(columns=['unit_measure', 'input_code']
-).rename(columns={"description":"unit_measure"})
-```
-
-After decoding, the data frame is much more human-interpretable. This transformation makes the data more accessible for analysis and presentation, while maintaining all the original information.

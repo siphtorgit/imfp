@@ -2,44 +2,75 @@
 title: "Datasets"
 ---
 
-#### The Parameters Argument Workflow
+## Making a Request
 
-To supply a list object, modify each data frame in the `params` list object to retain only the rows you want, and then supply the modified list object to `imfp.imf_dataset` as its parameters argument. Here is how to make the same request for annual coal price data using a parameters list:
+To retrieve data from an IMF database, you'll need the database ID and any relevant [filter parameters](docs/parameters.qmd). Here's a basic example using the Primary Commodity Price System (PCPS) database:
 
 ``` {python}
-# Fetch the 'freq' input code for annual frequency
-params['freq'] = params['freq'][params['freq']['description'].str.contains("Annual")]
+import imfp
 
-# Fetch the 'commodity' input code(s) for coal
-params['commodity'] = params['commodity'][params['commodity']['description'].str.contains("Coal")]
+# Get parameters and their valid codes
+params = imfp.imf_parameters("PCPS")
 
-# Fetch the 'unit_measure' input code for index
-params['unit_measure'] = params['unit_measure'][params['unit_measure']['description'].str.contains("Index")]
-
-# Request data from the API
-df = imfp.imf_dataset(database_id = "PCPS",
-         parameters = params,
-         start_year = 2000, end_year = 2015)
-
-# Display the first few entries in the retrieved data frame
-df.head()
+# Fetch annual coal price index data
+df = imfp.imf_dataset(
+    database_id="PCPS",
+    freq=["A"],  # Annual frequency
+    commodity=["PCOAL"],  # Coal prices
+    unit_measure=["IX"],  # Index
+    start_year=2000,
+    end_year=2015
+)
 ```
+
+This example creates two objects we'll use in the following sections:
+
+- `params`: A dictionary of parameters and their valid codes
+- `df`: The retrieved data frame containing our requested data
+
+## Decoding Returned Data
+
+When you retrieve data using `imfp.imf_dataset`, the returned data frame contains columns that correspond to the parameters you specified in your request. However, these columns use input codes (short identifiers) rather than human-readable descriptions. To make your data more interpretable, you can replace these codes with their corresponding text descriptions using the parameter information from `imfp.imf_parameters`, so that codes like "A" (Annual) or "W00" (World) become self-explanatory labels.
+
+For example, suppose we want to decode the `freq` (frequency), `ref_area` (geographical area), and `unit_measure` (unit) columns in our dataset. We'll merge the parameter descriptions into our data frame:
+
+``` {python}
+# Decode frequency codes (e.g., "A" → "Annual")
+df = df.merge(
+    # Select code-description pairs
+    params['freq'][['input_code', 'description']],
+    # Match codes in the data frame
+    left_on='freq',
+    # ...to codes in the parameter data
+    right_on='input_code',
+    # Keep all data rows
+    how='left'
+).drop(columns=['freq', 'input_code']
+).rename(columns={"description": "freq"})
+
+# Decode geographic area codes (e.g., "W00" → "World")
+df = df.merge(
+    params['ref_area'][['input_code', 'description']],
+    left_on='ref_area',
+    right_on='input_code',
+    how='left'
+).drop(columns=['ref_area', 'input_code']
+).rename(columns={"description":"ref_area"})
+
+# Decode unit codes (e.g., "IX" → "Index")
+df = df.merge(
+    params['unit_measure'][['input_code', 'description']],
+    left_on='unit_measure',
+    right_on='input_code',
+    how='left'
+).drop(columns=['unit_measure', 'input_code']
+).rename(columns={"description":"unit_measure"})
+```
+
+After decoding, the data frame is much more human-interpretable. This transformation makes the data more accessible for analysis and presentation, while maintaining all the original information.
 
 ## Understanding the Data Frame
 
-Also note that the returned data frame has mysterious-looking codes as values in some columns.
+Also note that the returned data frame has additional mysterious-looking codes as values in some columns.
 
 Codes in the `time_format` column are ISO 8601 duration codes. In this case, “P1Y” means “periods of 1 year.” The `unit_mult` column represents the number of zeroes you should add to the value column. For instance, if value is in millions, then the unit multiplier will be 6. If in billions, then the unit multiplier will be 9.
-
-The meanings of the other codes are stored in our `params` object and can be fetched with a join. For instance to fetch the meaning of the `ref_area` code “W00”, we can perform a left join with the `params['ref_area']` data frame and use select to replace `ref_area` with the parameter description:
-
-``` {python}
-# Join df with params['ref_area'] to fetch code description
-df = df.merge(params['ref_area'], left_on='ref_area',right_on='input_code',how='left')
-
-# Drop redundant columns and rename description column
-df = df.drop(columns=['ref_area','input_code']).rename(columns={"description":"ref_area"})
-
-# View first few columns in the modified data frame
-df.head()
-```

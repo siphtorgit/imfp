@@ -21,6 +21,8 @@ website:
             href: docs/datasets.qmd
           - text: Usage
             href: docs/usage.qmd
+          - text: Rate Limits
+            href: docs/rate_limits.qmd
           - text: Demo
             href: docs/demo.qmd
     right:
