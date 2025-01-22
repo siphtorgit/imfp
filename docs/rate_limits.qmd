@@ -15,6 +15,8 @@ This could prove problematic if the `imfp` library became too popular and too ma
 `imfp.set_imf_app_name()` sets the application name by changing the `IMF_APP_NAME` variable in the environment. If this variable doesn't exist, `imfp.set_imf_app_name()` will create it. To set a custom application name, simply call the `imfp.set_imf_app_name()` function with your desired application name as an argument:
 
 ``` {python}
+import imfp
+
 # Set custom app name as an environment variable
 imfp.set_imf_app_name("my_custom_app_name")
 ```
@@ -26,10 +28,7 @@ The function will throw an error if the provided name is missing, NULL, NA, not 
 If making multiple requests in a short period of time, you may want to increase the wait time between requests to avoid hitting the API's rate limits. This is done with the `set_imf_wait_time()` function:
 
 ``` {python}
-# Default 1.5 second wait between calls
-imfp.set_imf_wait_time(1.5)
-
-# Increase wait time for parallel processing
+# Increase wait time to 5 seconds
 imfp.set_imf_wait_time(5)
 ```
 
@@ -45,15 +44,21 @@ imfp.set_imf_wait_time(5)
 You can modify retry behavior:
 
 ``` {python}
-# Custom retry settings (not recommended above 3)
-df = imfp.imf_dataset("IFS", times=3)
+#| eval: false
+# Retry 4 times rather than the default 3
+df = imfp.imf_dataset("IFS", "NGDP_D_SA_IX", times=4)
 ```
 
 ### Caching Strategy
 
 To reduce API calls, you can cache frequently accessed data. For instance, in a Jupyter or Quarto notebook that you run multiple times, you can wrap each `imfp` function call in an `if` statement that checks if the returned data has already been saved to a file. If it has, it loads the data from the file. If it hasn't, it fetches the data from the API and saves it to a file.
 
+Note that to run this code, you will need to install the `pyarrow` library, which `pandas` uses as its engine for reading and writing parquet files (but which is not installed with `pandas` or `imfp` by default). Use `pip install pyarrow` to install it.
+
 ``` {python}
+import os
+import pandas as pd
+
 # Fetch imf databases from file if available, else from API
 cache_path = f"data/imf_databases.parquet"
 if os.path.exists(cache_path):
