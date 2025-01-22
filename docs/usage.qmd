@@ -2,6 +2,14 @@
 title: "Suggestions for Usage"
 ---
 
+## Determining Data Availability
+
+Unfortunately, **many** of the indicators listed as available in the lists of input codes returned by `imfp.imf_parameters()` are not actually available. This is a deficiency of the API rather than the library; someone at the IMF presumably intended to provide these indicators at some point, but never got around to it.
+
+The only way to be certain whether an indicator is available is to make a request to the API and see if it succeeds. If not, you will receive an error message indicating that no data was found for your parameters. In general, if you see this message, you should try making a less restrictive version of your request. For instance, if your request returns no data for an indicator for a given country and time period, you can omit the country or time period parameter and try again. If you still get no data, that indicator is not actually available through the API.
+
+While it is not fully predictable which indicators will be available, as a general rule you can expect to get unadjusted series but not adjusted ones. For instance, real and per capita GDP are not available (although they are listed) through the API, but nominal GDP is. The API does, however, make available all the adjustment variables you would need to adjust the data yourself. See the [Common Data Transformations](#common-data-transformations) section below for examples of how to make adjustments.
+
 ## Working with Large Data Frames
 
 ### Inspecting Data
@@ -117,4 +125,113 @@ def View(df: pd.DataFrame):
 
 # Call the function
 View(df)
+```
+
+## Common Data Transformations
+
+The International Financial Statistics (IFS) database provides key macroeconomic aggregates that are frequently needed when working with other IMF datasets. Here, we'll demonstrate how to use three fundamental indicators—GDP, price deflators, and population statistics—to transform your data.
+
+These transformations are essential for:
+
+- Converting nominal to real dollar values
+- Calculating per capita metrics
+- Harmonizing data across different frequencies
+- Adjusting for different unit scales
+
+For a complete, end-to-end example of these transformations in a real analysis workflow, see Jenny Xu's superb [demo notebook](https://github.com/jennyxu/imfp-demo).
+
+### Fetching IFS Adjusters
+
+First, let's retrieve the key adjustment variables from the IFS database:
+
+``` {python}
+# Fetch GDP Deflator (Index, Annual)
+deflator = imfp.imf_dataset(
+    database_id="IFS",
+    indicator="NGDP_D_SA_IX",  # GDP deflator index
+    freq="A",
+    start_year=2010
+)
+
+# Fetch Population Estimates (Annual)
+population = imfp.imf_dataset(
+    database_id="IFS",
+    indicator="LP_PE_NUM",
+    freq="A",
+    start_year=2010
+)
+```
+
+We'll also retireve a nominal GDP series to be adjusted:
+
+``` {python}
+# Fetch Nominal GDP (Domestic currency, annual)
+nominal_gdp = imfp.imf_dataset(
+    database_id="IFS", 
+    indicator="NGDP_XDC",
+    freq="A",
+    start_year=2010
+)
+```
+
+**Key IFS Indicators**:
+
+- `NGDP_D_SA_IX`: GDP deflator index (seasonally adjusted)
+- `LP_PE_NUM`: Population estimates
+- `NGDP_XDC`: Nominal GDP in domestic currency
+
+### Unit Multiplier Adjustment
+
+IMF data often includes a `unit_mult` column that indicates the scale of the values (e.g., millions, billions). We can write a helper function to apply these scaling factors:
+
+``` {python}
+def apply_unit_multiplier(df):
+    """Convert to numeric, adjust values using IMF's scaling factors, and drop
+    missing values"""
+    df['obs_value'] = pd.to_numeric(df['obs_value'])
+    df['unit_mult'] = pd.to_numeric(df['unit_mult'])
+    df['adjusted_value'] = df['obs_value'] * 10 ** df['unit_mult']
+    df = df.dropna()
+    return df
+
+# Apply to each dataset
+deflator = apply_unit_multiplier(deflator)
+population = apply_unit_multiplier(population)
+nominal_gdp = apply_unit_multiplier(nominal_gdp)
+```
+
+### Merging Datasets
+
+After harmonizing unit scales, we can combine the datasets using `pd.DataFrame.merge()` with `ref_area` and `time_period` as keys:
+
+``` {python}
+merged = (
+    nominal_gdp.merge(
+        deflator,
+        on=['ref_area', 'time_period'],
+        suffixes=('_gdp', '_deflator')
+    )
+    .merge(
+        population,
+        on=['ref_area', 'time_period'],
+        suffixes=('_population')
+    )
+)
+```
+
+### Calculating Real Values
+
+With the merged dataset, we can now calculate real GDP and per capita values:
+
+``` {python}
+# Convert nominal to real GDP
+merged['real_gdp'] = (
+    (merged['obs_value_gdp'] / merged['obs_value_deflator']) * 100
+)
+
+# Calculate per capita values
+merged['real_gdp_per_capita'] = merged['real_gdp'] / merged['obs_value_population']
+
+# Display the first 5 rows of the transformed data
+print(merged[['time_period', 'real_gdp', 'real_gdp_per_capita']].head(5))
 ```

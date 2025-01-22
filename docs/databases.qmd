@@ -50,6 +50,7 @@ See also [Working with Large Data Frames](usage.qmd#working-with-large-data-fram
 1. **Cache Database List**: The database list rarely changes. Consider saving it locally if you'll be making multiple queries. See [Caching Data](usage.qmd#caching-data) for sample code.
 
 2. **Search Strategically**: Use specific search terms to find relevant databases. For example:
+
    - "Price" for price indices
    - "Trade" for trade statistics
    - "Financial" for financial data

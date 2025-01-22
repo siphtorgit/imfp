@@ -31,7 +31,7 @@ In this project, we explored the following:
 * Regression Analysis
 * Time Series Analysis
 
-## Suggested packages
+## Utility Functions
 The integration of other Python tools not only streamlined our computational processes but also ensured consistency across the project.
 
 A custom module is written to simplify the process of making API calls and fetching information with imfp library. `load_or_fetch_databases`, `load_or_fetch_parameters` `load_or_fetch_dataset` load and retreive database, parameters, and dataset from a local or remote source. `view_dataframe_in_browser` displays dataframe in a web browser.
@@ -124,6 +124,7 @@ def load_or_fetch_dataset(database_id, indicator):
 
 ```
 
+## Dependencies
 Here is a brief introduction about the packages used:
 
 `pandas`: view and manipulate data frame
