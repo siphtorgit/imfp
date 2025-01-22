@@ -32,7 +32,9 @@ import imfp
 params = imfp.imf_parameters("PCPS")
 
 # View the available parameter names
-print(params.keys())
+print(
+    params.keys()
+)
 ```
 
 The function returns a dictionary of data frames. Each key in the dictionary corresponds to a parameter used in making requests from the database. The value for each key is a data frame with:
@@ -44,7 +46,9 @@ For example, to see the valid codes for the `freq` (frequency) parameter:
 
 ``` {python}
 # View the data frame of valid input codes for the frequency parameter
-print(params['freq'])
+print(
+    params['freq']
+)
 ```
 
 ## Parameter Definitions
@@ -55,7 +59,9 @@ If the parameter name is not self-explanatory, you can use the `imf_parameter_de
 # Get descriptions of what each parameter means
 params_defs = imfp.imf_parameter_defs("PCPS")
 
-print(params_defs)
+print(
+    params_defs
+)
 ```
 
 ## Supplying Parameters
@@ -69,6 +75,7 @@ For instance, on exploring the `freq` parameter of the Primary Commodity Price S
 Here's a complete example that fetches annual coal prices for the years 2000 through 2015:
 
 ``` {python}
+#| eval: false
 # Example: Get annual coal prices
 df = imfp.imf_dataset(
     database_id="PCPS",
@@ -121,6 +128,10 @@ df = imfp.imf_dataset(
     start_year=2000,
     end_year=2015
 )
+
+print(
+    df.head()
+)
 ```
 
 #### 2. Parameters Dictionary Approach
@@ -151,6 +162,10 @@ df = imfp.imf_dataset(
     parameters=modified_params,
     start_year=2000,
     end_year=2015
+)
+
+print(
+    df.head()
 )
 ```
 

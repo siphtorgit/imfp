@@ -12,22 +12,20 @@ website:
     left:
       - text: Quickstart
         href: index.qmd
-      - text: Docs
-        menu:
-          - text: Installation
-            href: docs/installation.qmd
-          - text: Databases
-            href: docs/databases.qmd
-          - text: Parameters
-            href: docs/parameters.qmd
-          - text: Datasets
-            href: docs/datasets.qmd
-          - text: Usage
-            href: docs/usage.qmd
-          - text: Rate Limits
-            href: docs/rate_limits.qmd
-          - text: Demo
-            href: docs/demo.qmd
+      - text: Installation
+        href: docs/installation.qmd
+      - text: Databases
+        href: docs/databases.qmd
+      - text: Parameters
+        href: docs/parameters.qmd
+      - text: Datasets
+        href: docs/datasets.qmd
+      - text: Usage
+        href: docs/usage.qmd
+      - text: Rate Limits
+        href: docs/rate_limits.qmd
+      - text: Demo
+        href: docs/demo.qmd
     right:
       - icon: github
         href: https://github.com/Promptly-Technologies-LLC/imfp
@@ -41,4 +39,3 @@ format:
   html:
     theme: cosmo
     toc: true
-    code-fold: true

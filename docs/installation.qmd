@@ -24,7 +24,7 @@ pip install --upgrade git+https://github.com/Promptly-Technologies-LLC/imfp.git
 
 You can then import the package in your Python script:
 
-```python
+``` python
 import imfp
 ```
 
@@ -32,13 +32,13 @@ import imfp
 
 `imfp` outputs data in a `pandas` data frame, so you will want to use the `pandas` package for its functions for viewing and manipulating this object type. For data analysis and visualization, we recommend installing these additional packages:
 
-```bash
+``` bash
 pip install -q pandas matplotlib seaborn numpy
 ```
 
 You can then import them in your Python script:
 
-```python
+``` python
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns

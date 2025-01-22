@@ -21,7 +21,9 @@ import imfp
 
 #Fetch the list of databases available through the IMF API
 databases = imfp.imf_databases()
-databases.head()
+print(
+   databases.head()
+)
 ```
 
 
@@ -33,14 +35,18 @@ To view and explore the database list, it’s possible to explore subsets of the
 
 ``` {python}
 # View a subset consisting of rows 5 through 9
-databases.loc[5:9]
+print(
+   databases.loc[5:9]
+)
 ```
 
 
 Or, if you already know which database you want, you can fetch the corresponding code by searching for a string match using `str.contains` and subsetting the data frame for matching rows. For instance, here’s how to search for commodities data:
 
 ``` {python}
-databases[databases['description'].str.contains("Commodity")]
+print(
+   databases[databases['description'].str.contains("Commodity")]
+)
 ```
 
 See also [Working with Large Data Frames](usage.qmd#working-with-large-data-frames) for sample code showing how to view the full contents of the data frame in a browser window. 
