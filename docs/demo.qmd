@@ -655,6 +655,7 @@ model.summary()
 Time series analysis allows us to explore how the relationship between GII and GDP change vary across different time periods, accounting for lagged effects. 
 
 Here was a quick summary of the result:
+
 * Both GII and GDP change time series were stationary.
 
 * Past GII change values significantly influenced cuurent GII change values.

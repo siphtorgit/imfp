@@ -1,5 +1,5 @@
 ---
-title: "Datasets"
+title: "Requesting Datasets"
 ---
 
 ## Making a Request
@@ -30,7 +30,7 @@ This example creates two objects we'll use in the following sections:
 
 ## Decoding Returned Data
 
-When you retrieve data using `imfp.imf_dataset`, the returned data frame contains columns that correspond to the parameters you specified in your request. However, these columns use input codes (short identifiers) rather than human-readable descriptions. To make your data more interpretable, you can replace these codes with their corresponding text descriptions using the parameter information from `imfp.imf_parameters`, so that codes like "A" (Annual) or "W00" (World) become self-explanatory labels.
+When you retrieve data using `imf_dataset`, the returned data frame contains columns that correspond to the parameters you specified in your request. However, these columns use input codes (short identifiers) rather than human-readable descriptions. To make your data more interpretable, you can replace these codes with their corresponding text descriptions using the parameter information from `imf_parameters`, so that codes like "A" (Annual) or "W00" (World) become self-explanatory labels.
 
 For example, suppose we want to decode the `freq` (frequency), `ref_area` (geographical area), and `unit_measure` (unit) columns in our dataset. We'll merge the parameter descriptions into our data frame:
 
@@ -65,6 +65,8 @@ df = df.merge(
     how='left'
 ).drop(columns=['unit_measure', 'input_code']
 ).rename(columns={"description":"unit_measure"})
+
+df.head()
 ```
 
 After decoding, the data frame is much more human-interpretable. This transformation makes the data more accessible for analysis and presentation, while maintaining all the original information.
@@ -73,4 +75,6 @@ After decoding, the data frame is much more human-interpretable. This transforma
 
 Also note that the returned data frame has additional mysterious-looking codes as values in some columns.
 
-Codes in the `time_format` column are ISO 8601 duration codes. In this case, “P1Y” means “periods of 1 year.” The `unit_mult` column represents the number of zeroes you should add to the value column. For instance, if value is in millions, then the unit multiplier will be 6. If in billions, then the unit multiplier will be 9.
+Codes in the `time_format` column are ISO 8601 duration codes. In this case, “P1Y” means “periods of 1 year.” See [Time Period Conversion](usage.qmd#time-period-conversion) for more information on reconciling time periods.
+
+The `unit_mult` column represents the number of zeroes you should add to the value column. For instance, if value is in millions, then the unit multiplier will be 6. If in billions, then the unit multiplier will be 9. See [Unit Multiplier Adjustment](usage.qmd#unit-multiplier-adjustment) for more information on reconciling units.

@@ -4,7 +4,7 @@ title: "Suggestions for Usage"
 
 ## Determining Data Availability
 
-Unfortunately, **many** of the indicators listed as available in the lists of input codes returned by `imfp.imf_parameters()` are not actually available. This is a deficiency of the API rather than the library; someone at the IMF presumably intended to provide these indicators at some point, but never got around to it.
+Unfortunately, **many** of the indicators listed as available in the lists of input codes returned by `imf_parameters()` are not actually available. This is a deficiency of the API rather than the library; someone at the IMF presumably intended to provide these indicators at some point, but never got around to it.
 
 The only way to be certain whether an indicator is available is to make a request to the API and see if it succeeds. If not, you will receive an error message indicating that no data was found for your parameters. In general, if you see this message, you should try making a less restrictive version of your request. For instance, if your request returns no data for an indicator for a given country and time period, you can omit the country or time period parameter and try again. If you still get no data, that indicator is not actually available through the API.
 
@@ -22,6 +22,9 @@ For large datasets, you can use the `pandas` library's `info()` method to get a 
 import imfp
 import pandas as pd
 
+# Set float format to 2 decimal places for pandas display output
+pd.set_option('display.float_format', lambda x: '%.2f' % x)
+
 df: pd.DataFrame = imfp.imf_dataset(
     database_id="PCPS",
     commodity=["PCOAL"],
@@ -30,18 +33,14 @@ df: pd.DataFrame = imfp.imf_dataset(
 )
 
 # Quick summary of DataFrame
-print(
-    df.info()
-)
+df.info()
 ```
 
 Alternatively, you can use the `head()` method to view the first 5 rows of the data frame.
 
 ``` {python}
 # View first 5 rows of DataFrame
-print(
-    df.head()
-)
+df.head()
 ```
 
 ### Cleaning Data
@@ -97,7 +96,7 @@ You can use the `pandas` library's `to_datetime()` method with the `format="mixe
 ``` {python}
 # Convert time_period to datetime
 df["datetime"] = pd.to_datetime(df["time_period"], format="mixed")
-print(df[["freq", "datetime"]].head())
+df[["freq", "datetime"]].head()
 ```
 
 Alternatively, you can split the `time_period` column into separate columns for year, quarter, and month, and then convert each to a numeric value:
@@ -113,7 +112,7 @@ df["year"] = pd.to_numeric(df["year"])
 df["quarter"] = pd.to_numeric(df["quarter"])
 df["month"] = pd.to_numeric(df["month"])
 
-print(df[["time_period", "year", "quarter", "month"]].head(5))
+df[["time_period", "year", "quarter", "month"]].head(5)
 ```
 
 ### Summarizing Data
@@ -281,7 +280,5 @@ merged['real_gdp'] = (
 merged['real_gdp_per_capita'] = merged['real_gdp'] / merged['obs_value']
 
 # Display the first 5 rows of the transformed data
-print(
-    merged[['time_period', 'real_gdp', 'real_gdp_per_capita']].head(5)
-)
+merged[['time_period', 'real_gdp', 'real_gdp_per_capita']].head(5)
 ```

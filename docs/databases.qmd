@@ -8,22 +8,21 @@ The IMF serves many different databases through its API, and the API needs to kn
 
 1. Get a list of available databases
 2. Find the database ID for the data you want
-3. Use that database ID to fetch the data
+
+Then you can use that database ID to fetch the data.
 
 ## Fetching the Database List
 
 ### Fetching an Index of Databases with the `imf_databases` Function
 
-To obtain the list of available databases and their corresponding IDs, use `imfp.imf_databases`:
+To obtain the list of available databases and their corresponding IDs, use `imf_databases`:
 
 ``` {python}
 import imfp
 
 #Fetch the list of databases available through the IMF API
 databases = imfp.imf_databases()
-print(
-   databases.head()
-)
+databases.head()
 ```
 
 
@@ -35,25 +34,21 @@ To view and explore the database list, it’s possible to explore subsets of the
 
 ``` {python}
 # View a subset consisting of rows 5 through 9
-print(
-   databases.loc[5:9]
-)
+databases.loc[5:9]
 ```
 
 
 Or, if you already know which database you want, you can fetch the corresponding code by searching for a string match using `str.contains` and subsetting the data frame for matching rows. For instance, here’s how to search for commodities data:
 
 ``` {python}
-print(
-   databases[databases['description'].str.contains("Commodity")]
-)
+databases[databases['description'].str.contains("Commodity")]
 ```
 
 See also [Working with Large Data Frames](usage.qmd#working-with-large-data-frames) for sample code showing how to view the full contents of the data frame in a browser window. 
 
 ## Best Practices
 
-1. **Cache Database List**: The database list rarely changes. Consider saving it locally if you'll be making multiple queries. See [Caching Data](usage.qmd#caching-data) for sample code.
+1. **Cache the Database List**: The database list rarely changes. Consider saving it locally if you'll be making multiple queries. See [Caching Strategy](rate_limits.qmd#caching-strategy) for sample code.
 
 2. **Search Strategically**: Use specific search terms to find relevant databases. For example:
 

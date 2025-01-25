@@ -16,7 +16,7 @@ title: "imfp"
 To install the stable version of imfp from PyPi, use pip.
 
 ```bash
-pip install -q --upgrade imfp
+pip install --upgrade imfp
 ```
 
 To load the library, use `import`:
@@ -27,11 +27,11 @@ import imfp
 
 ## Workflow
 
-The `imfp` package introduces four core functions: `imfp.imf_databases`, `imfp.imf_parameters`, `imfp.imf_parameter_defs`, and `imfp.imf_dataset`. The function for downloading datasets is `imfp.imf_dataset`, but you will need the other functions to determine what arguments to supply to `imfp.imf_dataset`.
+The `imfp` package introduces four core functions: `imf_databases`, `imf_parameters`, `imf_parameter_defs`, and `imf_dataset`. The function for downloading datasets is `imf_dataset`, but you will need the other functions to determine what arguments to supply to your `imf_dataset` function call.
 
 ### Fetching a List of Databases with `imf_databases`
 
-For instance, all calls to `imfp.imf_dataset` require a `database_id`. This is because the IMF serves many different databases through its API, and the API needs to know which of these many databases you're requesting data from.
+For instance, all calls to `imf_dataset` require a `database_id`. This is because the IMF serves many different databases through its API, and the API needs to know which of these many databases you're requesting data from.
 
 To fetch a list of available databases, use:
 
@@ -40,11 +40,11 @@ To fetch a list of available databases, use:
 databases = imfp.imf_databases()
 ```
 
-See [Databases](docs/databases.qmd) for more information.
+See [Working with Databases](docs/databases.qmd) for more information.
 
 ### Fetching a List of Parameters and Input Codes with `imf_parameters`
 
-Requests to fetch data from IMF databases are complicated by the fact that each database uses a different set of parameters when making a request. (At last count, there were 43 unique parameters used in making API requests from the various databases!) You also have to have the list of valid input codes for each parameter.
+Requests to fetch data from IMF databases are complicated by the fact that each database uses a different set of parameters when making a request. (At last count, there were 43 unique parameters used in making API requests from the various databases!) You also have to have the list of valid input codes for each parameter. See [Working with Parameters](docs/parameters.qmd) for a more detailed explanation of parameters and input codes and how they work.
 
 To obtain the full list of parameters and valid input codes for a given database, use:
 
@@ -53,7 +53,7 @@ To obtain the full list of parameters and valid input codes for a given database
 params = imfp.imf_parameters("PCPS")
 ```
 
-The `imfp.imf_parameters` function returns a dictionary of data frames. Each dictionary key name corresponds to a parameter used in making requests from the database:
+The `imf_parameters` function returns a dictionary of data frames. Each dictionary key name corresponds to a parameter used in making requests from the database:
 
 ``` {python}
 # Get key names from the params object
@@ -79,18 +79,17 @@ Similarly, we might search the dataframes of valid input codes for the `commodit
 
 ``` {python}
 # Find the 'commodity' input code for coal
-print(
-    params['commodity']
-        .loc[params['commodity']['description'].str.contains("Coal")]
-)
+params['commodity'].loc[
+    params['commodity']['description'].str.contains("Coal")
+]
 ```
 
 ``` {python}
 # Find the 'unit_measure' input code for index
-print(
-    params['unit_measure']
-        .loc[params['unit_measure']['description'].str.contains("Index")]
-)
+params['unit_measure'].loc[
+    params['unit_measure']['description'].str.contains("Index")
+]
+
 ```
 
 Finally, we can use the information we've gathered to make the request to fetch the data:
@@ -98,7 +97,7 @@ Finally, we can use the information we've gathered to make the request to fetch 
 ``` {python}
 # Request data from the API
 df = imfp.imf_dataset(database_id = "PCPS",
-         freq = ["A"], commodity = ["PCOAL"],
+         freq = ["A"], commodity = ["PCOAL", "PCOALAU", "PCOALSA"],
          unit_measure = ["IX"],
          start_year = 2000, end_year = 2015)
 
@@ -110,7 +109,7 @@ The returned data frame has a `time_format` column that contains ISO 8601 durati
 
 ## Working with the Returned Data Frame
 
-Note that all columns in the returned data frame are character vectors, and that to plot the series we will need to convert to valid numeric or date formats:
+Note that all columns in the returned data frame are string objects, and to plot the series we will need to convert to valid numeric or date formats:
 
 ``` {python}
 # Convert obs_value to numeric and time_period to integer year
@@ -130,7 +129,7 @@ sns.lineplot(data=df, x='time_period', y='obs_value', hue='commodity');
 
 We welcome contributions to improve `imfp`! Here's how you can help:
 
-1. If you find a bug, please open an issue
+1. If you find a bug, please open [a Github issue](https://github.com/Promptly-Technologies-LLC/imfp/issues)
 2. To fix a bug:
    - Fork and clone the repository and open a terminal in the repository directory
    - Install [uv](https://astral.sh/setup-uv/) with `curl -LsSf https://astral.sh/uv/install.sh | sh`

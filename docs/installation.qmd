@@ -30,19 +30,18 @@ import imfp
 
 ## Suggested Dependencies for Data Analysis
 
-`imfp` outputs data in a `pandas` data frame, so you will want to use the `pandas` package for its functions for viewing and manipulating this object type. For data analysis and visualization, we recommend installing these additional packages:
+`imfp` outputs data in a `pandas` data frame, so you will want to use the `pandas` package (which is installed with `imfp`) for its functions for viewing and manipulating this object type. For data visualization, we recommend installing these additional packages:
 
 ``` bash
-pip install -q pandas matplotlib seaborn numpy
+pip install -q matplotlib seaborn
 ```
 
-You can then import them in your Python script:
+You can then import these packages in your Python script:
 
 ``` python
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
 ```
 
 ## Development Installation

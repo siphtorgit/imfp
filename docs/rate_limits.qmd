@@ -12,7 +12,7 @@ The IMF API has an application-based rate limit of 50 requests per second. Each 
 
 This could prove problematic if the `imfp` library became too popular and too many users tried to make simultaneous API requests using the default app name. By setting a custom application name, users can avoid hitting this rate limit and being blocked by the API. To solve this problem, `imfp` supplies the `set_imf_app_name()` function to set a custom application name.
 
-`imfp.set_imf_app_name()` sets the application name by changing the `IMF_APP_NAME` variable in the environment. If this variable doesn't exist, `imfp.set_imf_app_name()` will create it. To set a custom application name, simply call the `imfp.set_imf_app_name()` function with your desired application name as an argument:
+`set_imf_app_name()` sets the application name by changing the `IMF_APP_NAME` variable in the environment. If this variable doesn't exist, `set_imf_app_name()` will create it. To set a custom application name, simply call the `set_imf_app_name()` function with your desired application name as an argument:
 
 ``` {python}
 import imfp

@@ -4,9 +4,22 @@ title: "Working with Parameters"
 
 ## Filtering IMF Dataset Requests with Parameters
 
-Once you have a `database_id`, it’s possible to make a call to `imfp.imf_dataset` to fetch the entire database: `imfp.imf_dataset(database_id)`. However, while this will succeed for a few small databases, it will fail for all of the larger ones. And even in the rare case when it succeeds, fetching an entire database can take a long time. You’re much better off supplying additional filter parameters to reduce the size of your request.
+Once you have a `database_id`, it’s possible to make a call to `imf_dataset` to fetch the entire database:
 
-Requests to databases available through the IMF API are complicated by the fact that each database uses a different set of parameters when making a request. (At last count, there were 43 unique parameters used in making API requests from the various databases!) You also have to have the list of valid input codes for each parameter. The `imfp.imf_parameters` function solves this problem. Use the function to obtain the full list of parameters and valid input codes for a given database.
+``` {python}
+#| eval: false
+import imfp
+import pandas as pd
+
+# Set float format to 2 decimal places for pandas display output
+pd.set_option('display.float_format', lambda x: '%.2f' % x)
+
+imfp.imf_dataset(database_id)
+```
+
+However, while this will succeed for a few small databases, it will fail for all of the larger ones. And even in the rare case when it succeeds, fetching an entire database can take a long time. You’re much better off supplying additional filter parameters to reduce the size of your request.
+
+Requests to databases available through the IMF API are complicated by the fact that each database uses a different set of parameters when making a request. (At last count, there were 43 unique parameters used in making API requests from the various databases!) You also have to have the list of valid input codes for each parameter. The `imf_parameters` function solves this problem. Use the function to obtain the full list of parameters and valid input codes for a given database.
 
 ## Understanding Filter Parameters
 
@@ -32,12 +45,12 @@ import imfp
 params = imfp.imf_parameters("PCPS")
 
 # View the available parameter names
-print(
-    params.keys()
-)
+params.keys()
 ```
 
-The function returns a dictionary of data frames. Each key in the dictionary corresponds to a parameter used in making requests from the database. The value for each key is a data frame with:
+The function returns a dictionary of data frames.
+
+Each key in the dictionary corresponds to a parameter used in making requests from the database. The value for each key is a data frame with the following columns:
 
 - `input_code`: The valid codes you can use for that parameter
 - `description`: A short text description of what each code represents
@@ -46,9 +59,7 @@ For example, to see the valid codes for the `freq` (frequency) parameter:
 
 ``` {python}
 # View the data frame of valid input codes for the frequency parameter
-print(
-    params['freq']
-)
+params['freq']
 ```
 
 ## Parameter Definitions
@@ -59,18 +70,16 @@ If the parameter name is not self-explanatory, you can use the `imf_parameter_de
 # Get descriptions of what each parameter means
 params_defs = imfp.imf_parameter_defs("PCPS")
 
-print(
-    params_defs
-)
+params_defs
 ```
 
 ## Supplying Parameters
 
 ### Basic Approach (Recommended for Most Users)
 
-To make a request to fetch data from the IMF API, just call `imfp.imf_dataset` with the database ID and keyword arguments for each parameter, where the keyword argument name is the parameter name and the value is the list of codes you want.
+To make a request to fetch data from the IMF API, just call `imf_dataset` with the database ID and keyword arguments for each parameter, where the keyword argument name is the parameter name and the value is the list of codes you want.
 
-For instance, on exploring the `freq` parameter of the Primary Commodity Price System database above, we found that the frequency can take one of three values: "A" for annual, "Q" for quarterly, and "M" for monthly. Thus, to request annual data, we can call `imfp.imf_dataset` with `freq = ["A"]`.
+For instance, on exploring the `freq` parameter of the Primary Commodity Price System database above, we found that the frequency can take one of three values: "A" for annual, "Q" for quarterly, and "M" for monthly. Thus, to request annual data, we can call `imf_dataset` with `freq = ["A"]`.
 
 Here's a complete example that fetches annual coal prices for the years 2000 through 2015:
 
@@ -88,7 +97,7 @@ df = imfp.imf_dataset(
 
 ### Advanced Approaches
 
-For more complex queries, there are two programmatic ways to supply parameters to `imfp.imf_dataset`. These approaches are particularly useful when you need to filter parameters based on their descriptions or when working with multiple parameter values.
+For more complex queries, there are two programmatic ways to supply parameters to `imf_dataset`. These approaches are particularly useful when you need to filter parameters based on their descriptions or when working with multiple parameter values.
 
 #### 1. List Arguments with Parameter Filtering
 
@@ -129,9 +138,7 @@ df = imfp.imf_dataset(
     end_year=2015
 )
 
-print(
-    df.head()
-)
+df.head()
 ```
 
 #### 2. Parameters Dictionary Approach
@@ -164,9 +171,7 @@ df = imfp.imf_dataset(
     end_year=2015
 )
 
-print(
-    df.head()
-)
+df.head()
 ```
 
 Note that when using the parameters dictionary approach, you cannot combine it with individual parameter arguments. If you supply a `parameters` argument, any other keyword arguments for individual parameters will be ignored.
