@@ -167,7 +167,7 @@ First, let's retrieve the key adjustment variables from the IFS database:
 # Fetch GDP Deflator (Index, Annual)
 deflator = imfp.imf_dataset(
     database_id="IFS",
-    indicator="NGDP_D_SA_IX",  # GDP deflator index
+    indicator="NGDP_D_SA_IX",
     freq="Q",
     start_year=2010
 )
@@ -178,6 +178,14 @@ population = imfp.imf_dataset(
     indicator="LP_PE_NUM",
     freq="A",
     start_year=2010
+)
+
+# Fetch Exchange Rate (Annual)
+exchange_rate = imfp.imf_dataset(
+    database_id="IFS", 
+    indicator="ENDE_XDC_USD_RATE",
+    freq="Q",
+    # start_year=2010 currently breaks this query for some reason
 )
 ```
 
@@ -197,40 +205,35 @@ nominal_gdp = imfp.imf_dataset(
 
 - `NGDP_D_SA_IX`: GDP deflator index (seasonally adjusted)
 - `LP_PE_NUM`: Population estimates
+- `ENDE_XDC_USD_RATE`: Exchange rate (domestic currency per USD)
 - `NGDP_XDC`: Nominal GDP in domestic currency
-
-### Unit Multiplier Adjustment
-
-IMF data often includes a `unit_mult` column that indicates the scale of the values (e.g., millions, billions). We can write a helper function to apply these scaling factors:
-
-``` {python}
-def apply_unit_multiplier(df):
-    """Convert to numeric, adjust values using IMF's scaling factors, and drop
-    missing values"""
-    df['obs_value'] = pd.to_numeric(df['obs_value'])
-    df['unit_mult'] = pd.to_numeric(df['unit_mult'])
-    df['adjusted_value'] = df['obs_value'] * 10 ** df['unit_mult']
-    df = df.dropna()
-    return df
-
-# Apply to each dataset
-deflator = apply_unit_multiplier(deflator)
-population = apply_unit_multiplier(population)
-nominal_gdp = apply_unit_multiplier(nominal_gdp)
-```
 
 ### Harmonizing Frequencies
 
-When working with data of different frequencies, you'll often need to harmonize them. For example, GDP data is typically reported quarterly, while some other indicators may be annual. There are two common approaches:
+When working with data of different frequencies, you'll often need to harmonize them. For example, population and national GDP are available at an annual frequency, while the GDP deflator and exchange rates can only be obtained at a monthly or quarterly frequency. There are two common approaches:
 
 1. Using Q4 values: This approach is often used for stock variables (measurements taken at a point in time) and when you want to align with end-of-year values:
 
 ```{python}
 # Keep only Q4 observations for annual comparisons
 deflator = deflator[deflator['time_period'].str.contains("Q4")]
+exchange_rate = exchange_rate[exchange_rate['time_period'].str.contains("Q4")]
 
 # Extract just the year from the time period for Q4 data
 deflator['time_period'] = deflator['time_period'].str[:4]
+exchange_rate['time_period'] = exchange_rate['time_period'].str[:4]
+```
+
+``` {python}
+exchange_rate.tail()
+```
+
+``` {python}
+#| include: false
+#| echo: false
+# Hidden fixup to filter out exchange rate data before 2010
+# Remove this line when the start_year parameter is fixed for this query
+exchange_rate = exchange_rate[exchange_rate['time_period'].astype(int) > 2010]
 ```
 
 2. Calculating annual averages: This approach is more appropriate for flow variables (measurements over a period) and when you want to smooth out seasonal variations:
@@ -248,6 +251,27 @@ deflator = deflator.groupby(
 
 Choose the appropriate method based on your specific analysis needs and the economic meaning of your variables.
 
+### Unit Multiplier Adjustment
+
+IMF data often includes a `unit_mult` column that indicates the scale of the values (e.g., millions, billions). We can write a helper function to apply these scaling factors:
+
+``` {python}
+def apply_unit_multiplier(df):
+    """Convert to numeric, adjust values using IMF's scaling factors, and drop
+    missing values"""
+    df['obs_value'] = pd.to_numeric(df['obs_value'])
+    df['unit_mult'] = pd.to_numeric(df['unit_mult'])
+    df['adjusted_value'] = df['obs_value'] * 10 ** df['unit_mult']
+    df = df.dropna(subset=["obs_value"])
+    return df
+
+# Apply to each dataset
+deflator = apply_unit_multiplier(deflator)
+population = apply_unit_multiplier(population)
+exchange_rate = apply_unit_multiplier(exchange_rate)
+nominal_gdp = apply_unit_multiplier(nominal_gdp)
+```
+
 ### Merging Datasets
 
 After harmonizing unit scales, we can combine the datasets using `pd.DataFrame.merge()` with `ref_area` and `time_period` as keys:
@@ -263,6 +287,11 @@ merged = (
         population,
         on=['ref_area', 'time_period']
     )
+    .merge(
+        exchange_rate,
+        on=['ref_area', 'time_period'],
+        suffixes=('_population', '_exchange_rate')
+    )
 )
 ```
 
@@ -273,12 +302,32 @@ With the merged dataset, we can now calculate real GDP and per capita values:
 ``` {python}
 # Convert nominal to real GDP
 merged['real_gdp'] = (
-    (merged['obs_value_gdp'] / merged['obs_value_deflator']) * 100
+    (merged['adjusted_value_gdp'] / merged['adjusted_value_deflator']) * 100
 )
 
 # Calculate per capita values (using population obs_value)
-merged['real_gdp_per_capita'] = merged['real_gdp'] / merged['obs_value']
+merged['real_gdp_per_capita'] = merged['real_gdp'] / merged['adjusted_value_population']
 
 # Display the first 5 rows of the transformed data
 merged[['time_period', 'real_gdp', 'real_gdp_per_capita']].head(5)
+```
+
+## Exchange Rate Adjustment
+
+Note that this result is still in the domestic currency of the country. If you need to convert to a common currency, you can use the exchange rate data from the IFS database.
+
+``` {python}
+# Because 'adjusted_value_exrate' is local-currency-per-USD,
+# dividing local-currency real GDP by it yields GDP in USD.
+merged["real_gdp_usd"] = (
+    merged["real_gdp"] / merged["adjusted_value_exchange_rate"]
+)
+
+# (Optional) real GDP per capita in USD
+merged["real_gdp_usd_per_capita"] = (
+    merged["real_gdp_usd"] / merged["adjusted_value_population"]
+)
+
+# Inspect results
+merged[["time_period","ref_area","real_gdp","real_gdp_usd","real_gdp_usd_per_capita"]].head()
 ```
