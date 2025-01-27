@@ -49,11 +49,11 @@ We welcome contributions to improve `imfp`! Here's how you can help:
 2. To fix a bug:
    - Fork and clone the repository and open a terminal in the repository directory
    - Install [uv](https://astral.sh/setup-uv/) with `curl -LsSf https://astral.sh/uv/install.sh | sh`
-   - Install the dependencies with `uv sync --extra dev`
+   - Install the dependencies with `uv sync`
    - Install a git hook to enforce conventional commits with `curl -o- https://raw.githubusercontent.com/tapsellorg/conventional-commits-git-hook/master/scripts/install.sh | sh`
    - Create a fix, commit it with an ["Angular-style Conventional Commit"](https://www.conventionalcommits.org/en/v1.0.0-beta.4/) message, and push it to your fork
    - Open a pull request to our `main` branch
 
-Note that if you want to change and/or render the documentation, you will need to install the [Quarto CLI tool](https://quarto.org/docs/download/).
+Note that if you want to change and preview the documentation, you will need to install the [Quarto CLI tool](https://quarto.org/docs/download/).
 
 Version incrementing, package building, testing, changelog generation, documentation rendering, publishing to PyPI, and Github release creation is handled automatically by the GitHub Actions workflow based on the commit messages.
