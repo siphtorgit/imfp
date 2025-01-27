@@ -312,7 +312,7 @@ merged['real_gdp_per_capita'] = merged['real_gdp'] / merged['adjusted_value_popu
 merged[['time_period', 'real_gdp', 'real_gdp_per_capita']].head(5)
 ```
 
-## Exchange Rate Adjustment
+### Exchange Rate Adjustment
 
 Note that this result is still in the domestic currency of the country. If you need to convert to a common currency, you can use the exchange rate data from the IFS database.
 
