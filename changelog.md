@@ -1,6 +1,52 @@
 # CHANGELOG
 
 
+## v1.1.10 (2025-01-27)
+
+### Bug Fixes
+
+- Add missing imports to usage examples
+  ([`e5729c6`](https://github.com/Promptly-Technologies-LLC/imfp/commit/e5729c6a5bf8830a96b13a3d18ed6542b9b91177))
+
+- Handle dev as dependency group, not an extra
+  ([`baf6b98`](https://github.com/Promptly-Technologies-LLC/imfp/commit/baf6b9828804f0cdbb27973eeb058326140b5203))
+
+- Resolve some documentation rendering errors
+  ([`604e5e6`](https://github.com/Promptly-Technologies-LLC/imfp/commit/604e5e62e848e9b54ee0d70508037cd77bd87c97))
+
+### Documentation
+
+- Add search and code fold functionality to documentation
+  ([`fbfec44`](https://github.com/Promptly-Technologies-LLC/imfp/commit/fbfec44d875e327530f3c7c1d24592fc3a449ebb))
+
+- Added exchange rate conversion
+  ([`ec1d705`](https://github.com/Promptly-Technologies-LLC/imfp/commit/ec1d705d08d2d93a351097d3beadb0093706cb13))
+
+- Added llms.txt
+  ([`8e97b33`](https://github.com/Promptly-Technologies-LLC/imfp/commit/8e97b331f0595c3bce19a38e0d1dc0f45133af88))
+
+- Complete first draft of refactored documentation
+  ([`653a4ee`](https://github.com/Promptly-Technologies-LLC/imfp/commit/653a4ee712f71cc30d635ed1c297080adedb732b))
+
+- Fixed broken Github Actions test workflow badge
+  ([`cbde373`](https://github.com/Promptly-Technologies-LLC/imfp/commit/cbde373fca9d9b1de9f421d3d9bba0f141d6bd32))
+
+- Polished the usage page and added a rate limits page
+  ([`3acf267`](https://github.com/Promptly-Technologies-LLC/imfp/commit/3acf2670ea68afdf52f972b6dcf4f078f5aeea13))
+
+- Rewrote the quickstart guide
+  ([`8684aff`](https://github.com/Promptly-Technologies-LLC/imfp/commit/8684aff05f5080b7670f0147c5356d843693c669))
+
+- Some minor copyediting
+  ([`7bdf61d`](https://github.com/Promptly-Technologies-LLC/imfp/commit/7bdf61dc4bf19dafa69a135342b7963e9c95627b))
+
+- Updated documentation for parameters function
+  ([`d3dc190`](https://github.com/Promptly-Technologies-LLC/imfp/commit/d3dc190797e1b9bc08744b8b8556b163fb43e40f))
+
+- Worked out bugs in documentation examples
+  ([`386fee3`](https://github.com/Promptly-Technologies-LLC/imfp/commit/386fee30abfa6343afd890271f00a862dcd30069))
+
+
 ## v1.1.9 (2025-01-19)
 
 ### Bug Fixes

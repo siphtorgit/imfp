@@ -1,0 +1,68 @@
+---
+title: "Working with Databases"
+---
+
+## Understanding IMF Databases
+
+The IMF serves many different databases through its API, and the API needs to know which of these many databases you're requesting data from. Before you can fetch any data, you'll need to:
+
+1. Get a list of available databases
+2. Find the database ID for the data you want
+
+Then you can use that database ID to fetch the data.
+
+## Fetching the Database List
+
+### Fetching an Index of Databases with the `imf_databases` Function
+
+To obtain the list of available databases and their corresponding IDs, use `imf_databases`:
+
+``` {python}
+import imfp
+
+#Fetch the list of databases available through the IMF API
+databases = imfp.imf_databases()
+databases.head()
+```
+
+
+This function returns the IMF’s listing of 259 databases available through the API. (In reality, a few of the listed databases are defunct and not actually available. The databases FAS_2015, GFS01, FM202010, APDREO202010, AFRREO202010, WHDREO202010, BOPAGG_2020, and DOT_2020Q1 were unavailable as of last check.)
+
+## Exploring the Database List
+
+To view and explore the database list, it’s possible to explore subsets of the data frame by row number with `databases.loc`:
+
+``` {python}
+# View a subset consisting of rows 5 through 9
+databases.loc[5:9]
+```
+
+
+Or, if you already know which database you want, you can fetch the corresponding code by searching for a string match using `str.contains` and subsetting the data frame for matching rows. For instance, here’s how to search for commodities data:
+
+``` {python}
+databases[databases['description'].str.contains("Commodity")]
+```
+
+See also [Working with Large Data Frames](usage.qmd#working-with-large-data-frames) for sample code showing how to view the full contents of the data frame in a browser window. 
+
+## Best Practices
+
+1. **Cache the Database List**: The database list rarely changes. Consider saving it locally if you'll be making multiple queries. See [Caching Strategy](rate_limits.qmd#caching-strategy) for sample code.
+
+2. **Search Strategically**: Use specific search terms to find relevant databases. For example:
+
+   - "Price" for price indices
+   - "Trade" for trade statistics
+   - "Financial" for financial data
+
+3. **Use a Browser Viewer**: See [Working with Large Data Frames](usage.qmd#working-with-large-data-frames) for sample code showing how to view the full contents of the data frame in a browser window.
+
+4. **Note Database IDs**: Once you find a database you'll use frequently, note its database ID for future reference.
+
+## Next Steps
+
+Once you've identified the database you want to use, you'll need to:
+
+1. Get the list of parameters for that database (see [Parameters](parameters.qmd))
+2. Use those parameters to fetch your data (see [Datasets](datasets.qmd))
