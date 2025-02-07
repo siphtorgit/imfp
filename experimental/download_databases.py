@@ -2,13 +2,14 @@
 # recommend trying this.
 
 import imfp
+from pandas import DataFrame
 
 # Set a custom wait time
 _imf_wait_time = 10
 
 # Attempt to download databases sequentially
-databases = imfp.imf_databases()
-datasets = {"database_names": [], "dataframes": []}
+databases: DataFrame = imfp.imf_databases()
+datasets: dict[str, list[DataFrame | None]] = {"database_names": [], "dataframes": []}
 for database_id in databases["database_id"]:
     datasets["database_names"].append(database_id)
     try:

@@ -1,6 +1,7 @@
 # This script tries to download whole databases indicator by indicator
 
 import imfp
+from pandas import DataFrame
 
 # Examine database list
 databases = imfp.imf_databases()
@@ -11,8 +12,8 @@ database_to_download = "IFS"
 
 # Try to download the database indicator by indicator (Note that some databases don't
 # use the 'indicator' parameter, so this won't work with every database)
-indicators = imfp.imf_parameters("IFS")["indicator"]
-datasets = {"indicator_names": [], "dataframes": []}
+indicators: DataFrame = imfp.imf_parameters("IFS")["indicator"]
+datasets: dict[str, list[DataFrame | None]] = {"indicator_names": [], "dataframes": []}
 for indicator in indicators["input_code"]:
     datasets["indicator_names"].append(indicator)
     try:

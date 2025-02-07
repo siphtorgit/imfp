@@ -1,8 +1,10 @@
 import logging
-from pandas import DataFrame, Series, concat
+from typing import overload, Literal
 from warnings import warn
-from .utils import _download_parse, _imf_dimensions, _imf_metadata
 from urllib.parse import urlencode
+from pandas import DataFrame, Series, concat
+
+from .utils import _download_parse, _imf_dimensions, _imf_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -175,11 +177,38 @@ def imf_parameter_defs(
     return parameterlist
 
 
+@overload
 def imf_dataset(
     database_id: str,
-    parameters: dict = None,
-    start_year: int = None,
-    end_year: int = None,
+    parameters: dict | None = None,
+    start_year: int | str | None = None,
+    end_year: int | str | None = None,
+    return_raw: bool = False,
+    print_url: bool = False,
+    times: int = 3,
+    include_metadata: Literal[False] = False,
+    **kwargs,
+) -> DataFrame: ...
+
+@overload
+def imf_dataset(
+    database_id: str,
+    parameters: dict | None = None,
+    start_year: int | str | None = None,
+    end_year: int | str | None = None,
+    return_raw: bool = False,
+    print_url: bool = False,
+    times: int = 3,
+    include_metadata: Literal[True] = True,
+    **kwargs,
+) -> tuple[DataFrame, DataFrame]: ...
+
+
+def imf_dataset(
+    database_id: str,
+    parameters: dict | None = None,
+    start_year: int | str | None = None,
+    end_year: int | str | None = None,
     return_raw: bool = False,
     print_url: bool = False,
     times: int = 3,
@@ -224,10 +253,7 @@ def imf_dataset(
         return_raw == True, returns the raw JSON fetched from the API endpoint.
     """
 
-    if database_id is None:
-        raise ValueError("Missing required database_id argument.")
-
-    if not isinstance(database_id, str):
+    if not database_id or not isinstance(database_id, str):
         raise ValueError("database_id must be a string.")
 
     years = {}
