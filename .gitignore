@@ -133,3 +133,6 @@ cython_debug/
 
 # AI chat histories
 .specstory
+
+# Mac
+.DS_Store
