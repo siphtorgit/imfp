@@ -1,6 +1,35 @@
 # CHANGELOG
 
 
+## v1.2.0 (2025-02-08)
+
+### Bug Fixes
+
+- Resolve mypy errors
+  ([`5e0ac24`](https://github.com/Promptly-Technologies-LLC/imfp/commit/5e0ac24206746621a10242a5815f67ba4a67bc8c))
+
+### Chores
+
+- Gitignore DS_STORE
+  ([`4878b90`](https://github.com/Promptly-Technologies-LLC/imfp/commit/4878b907171294ff8f81439dceb817b46a15a243))
+
+- Update lockfile
+  ([`a5a70ea`](https://github.com/Promptly-Technologies-LLC/imfp/commit/a5a70ea34774f670e8fdab4ca5b6b0dadcdea662))
+
+### Documentation
+
+- Point to a conventional commit hook that works on POSIX systems
+  ([`89d5a11`](https://github.com/Promptly-Technologies-LLC/imfp/commit/89d5a11e274f7aab975d9902a9194edbadb95b3f))
+
+- Remove leftover tail call from usage.qmd
+  ([`a92f91d`](https://github.com/Promptly-Technologies-LLC/imfp/commit/a92f91da649da258949de94a19e14ea9c5c5132e))
+
+### Features
+
+- Resolved mypy errors and enhanced function argument type enforcement
+  ([`dd2e41a`](https://github.com/Promptly-Technologies-LLC/imfp/commit/dd2e41aa96e8d320d52c50e60a7721941006b249))
+
+
 ## v1.1.10 (2025-01-27)
 
 ### Bug Fixes
@@ -13,6 +42,11 @@
 
 - Resolve some documentation rendering errors
   ([`604e5e6`](https://github.com/Promptly-Technologies-LLC/imfp/commit/604e5e62e848e9b54ee0d70508037cd77bd87c97))
+
+### Code Style
+
+- Added mypy dev dependency
+  ([`dd632a9`](https://github.com/Promptly-Technologies-LLC/imfp/commit/dd632a9bea26eca7da92122f49fca92142b37f52))
 
 ### Documentation
 
