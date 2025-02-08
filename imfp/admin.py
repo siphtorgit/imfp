@@ -3,6 +3,7 @@ from warnings import warn
 from typing import Union
 import type_enforced
 
+
 @type_enforced.Enforcer
 def set_imf_app_name(name: str = "imfp") -> None:
     """
@@ -27,9 +28,7 @@ def set_imf_app_name(name: str = "imfp") -> None:
     """
 
     if len(name) > 255:
-        raise ValueError(
-            "Application name must be no longer than 255 characters."
-        )
+        raise ValueError("Application name must be no longer than 255 characters.")
 
     if name == "imfp" or name == "":
         warn(
