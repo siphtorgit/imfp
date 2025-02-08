@@ -3,12 +3,14 @@ from typing import overload, Literal
 from warnings import warn
 from urllib.parse import urlencode
 from pandas import DataFrame, Series, concat
+import type_enforced
 
 from .utils import _download_parse, _imf_dimensions, _imf_metadata
 
 logger = logging.getLogger(__name__)
 
 
+@type_enforced.Enforcer
 def imf_databases(times: int = 3) -> DataFrame:
     """
     List IMF database IDs and descriptions
@@ -47,9 +49,11 @@ def imf_databases(times: int = 3) -> DataFrame:
     return database_list
 
 
+@type_enforced.Enforcer
 def imf_parameters(database_id: str, times: int = 2) -> dict[str, DataFrame]:
     """
     List input parameters and available parameter values for use in
+
     making API requests from a given IMF database.
 
     Parameters
@@ -76,9 +80,6 @@ def imf_parameters(database_id: str, times: int = 2) -> dict[str, DataFrame]:
     # Commodity Price System database
     params = imf_parameters(database_id='PCPS')
     """
-    if not database_id:
-        raise ValueError("Must supply database_id. Use imf_databases to find.")
-
     url = "http://dataservices.imf.org/REST/SDMX_JSON.svc/CodeList/"
     try:
         codelist = _imf_dimensions(database_id, times)
@@ -126,6 +127,7 @@ def imf_parameters(database_id: str, times: int = 2) -> dict[str, DataFrame]:
     return parameter_list
 
 
+@type_enforced.Enforcer
 def imf_parameter_defs(
     database_id: str, times: int = 3, inputs_only: bool = True
 ) -> DataFrame:
@@ -158,9 +160,6 @@ def imf_parameter_defs(
     # the Primary Commodity Price System database
     param_defs = imf_parameter_defs(database_id='PCPS')
     """
-    if not database_id:
-        raise ValueError("Must supply database_id. Use imf_databases to find.")
-
     try:
         parameterlist = _imf_dimensions(database_id, times, inputs_only)[
             ["parameter", "description"]
@@ -201,9 +200,10 @@ def imf_dataset(
     times: int = 3,
     include_metadata: Literal[True] = True,
     **kwargs,
-) -> tuple[DataFrame, DataFrame]: ...
+) -> tuple[dict, DataFrame]: ...
 
 
+@type_enforced.Enforcer
 def imf_dataset(
     database_id: str,
     parameters: dict | None = None,
@@ -214,7 +214,7 @@ def imf_dataset(
     times: int = 3,
     include_metadata: bool = False,
     **kwargs,
-) -> DataFrame | tuple[DataFrame, DataFrame]:
+) -> DataFrame | tuple[dict, DataFrame]:
     """
     Download a data series from the IMF.
 
@@ -252,10 +252,6 @@ def imf_dataset(
         database header, and whose second item is the pandas DataFrame. If
         return_raw == True, returns the raw JSON fetched from the API endpoint.
     """
-
-    if not database_id or not isinstance(database_id, str):
-        raise ValueError("database_id must be a string.")
-
     years = {}
     if start_year is not None:
         try:

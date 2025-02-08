@@ -13,14 +13,15 @@ def test_set_imf_app_name():
     with pytest.warns(UserWarning):
         set_imf_app_name("imfp")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         set_imf_app_name(None)
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         set_imf_app_name(float("nan"))
+    with pytest.raises(TypeError):
+        set_imf_app_name(["z", "z"])
+
     with pytest.raises(ValueError):
         set_imf_app_name("z" * 256)
-    with pytest.raises(ValueError):
-        set_imf_app_name(["z", "z"])
 
     set_imf_app_name("imfr_admin_functions_tester")
     assert os.getenv("IMF_APP_NAME") == "imfr_admin_functions_tester"
@@ -57,7 +58,3 @@ def test_set_imf_wait_time(env_setup_teardown):
     # Test with invalid input (negative value)
     with pytest.raises(ValueError):
         set_imf_wait_time(-1)
-
-
-if __name__ == "__main__":
-    pytest.main()
