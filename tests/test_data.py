@@ -269,7 +269,3 @@ def test_imf_dataset_include_metadata(set_options):
     assert isinstance(output[0], dict)
     assert isinstance(output[1], pd.core.frame.DataFrame)
     assert all([not pd.isna(value) for value in output[0].values()])
-
-
-if __name__ == "__main__":
-    pytest.main()

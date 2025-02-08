@@ -130,3 +130,9 @@ cython_debug/
 
 # Quarto
 /.quarto/
+
+# AI chat histories
+.specstory
+
+# Mac
+.DS_Store

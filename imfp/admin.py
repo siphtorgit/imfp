@@ -1,8 +1,10 @@
 from os import environ
 from warnings import warn
 from typing import Union
+import type_enforced
 
 
+@type_enforced.Enforcer
 def set_imf_app_name(name: str = "imfp") -> None:
     """
     Set the IMF Application Name.
@@ -25,11 +27,8 @@ def set_imf_app_name(name: str = "imfp") -> None:
         imf_app_name("my_custom_app_name")
     """
 
-    if not isinstance(name, str) or len(name) > 255:
-        raise ValueError(
-            "Please provide a valid string as the application "
-            "name (max length: 255 characters)."
-        )
+    if len(name) > 255:
+        raise ValueError("Application name must be no longer than 255 characters.")
 
     if name == "imfp" or name == "":
         warn(
@@ -52,6 +51,7 @@ def set_imf_app_name(name: str = "imfp") -> None:
     return None
 
 
+@type_enforced.Enforcer
 def set_imf_wait_time(wait_time: Union[int, float] = 1.5) -> None:
     """
     Set the IMF wait time as an environment variable.
@@ -63,9 +63,6 @@ def set_imf_wait_time(wait_time: Union[int, float] = 1.5) -> None:
         TypeError: If the provided wait_time is not a numeric value (int or float).
         ValueError: If the provided wait_time is not greater than 0.
     """
-    if not isinstance(wait_time, (int, float)):
-        raise TypeError("Rate limit wait time must be a numeric value (int or float).")
-
     if wait_time >= 0:
         environ["IMF_WAIT_TIME"] = str(wait_time)
     else:

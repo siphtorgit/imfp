@@ -12,6 +12,7 @@ from imfp import (
     set_imf_wait_time,
 )
 from imfp.utils import _imf_save_response, _imf_use_cache
+from typing import List
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -222,7 +223,3 @@ def test_bad_request(set_options):
         _download_parse(URL)
 
     assert "too large" in str(excinfo.value)
-
-
-if __name__ == "__main__":
-    pytest.main()
