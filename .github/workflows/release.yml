@@ -76,4 +76,4 @@ jobs:
         with:
           commit_message: "Release ${{ steps.release.outputs.tag }} [skip ci]"
           branch: ${{ github.ref_name }}
-          file_pattern: "pyproject.toml changelog.md"
+          file_pattern: "pyproject.toml changelog.md uv.lock"

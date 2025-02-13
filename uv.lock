@@ -634,7 +634,7 @@ wheels = [
 
 [[package]]
 name = "imfp"
-version = "1.1.10"
+version = "1.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
