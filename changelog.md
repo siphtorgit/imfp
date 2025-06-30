@@ -1,6 +1,38 @@
 # CHANGELOG
 
 
+## v1.2.1 (2025-06-30)
+
+### Bug Fixes
+
+- Bump version for dependabot chores
+  ([`cba9584`](https://github.com/Promptly-Technologies-LLC/imfp/commit/cba9584ff542ad1440b00f933453f50b0e46cfe0))
+
+### Chores
+
+- Make sure version-incremented lockfile gets committed during CI release
+  ([`848c355`](https://github.com/Promptly-Technologies-LLC/imfp/commit/848c35583230b29c62ff32ea30bd20d5f0495a08))
+
+- **deps**: Bump requests in the pip group across 1 directory
+  ([`52ac3a3`](https://github.com/Promptly-Technologies-LLC/imfp/commit/52ac3a3187c5ceaf5ec97d8c7f15ca73cd5c4479))
+
+Bumps the pip group with 1 update in the / directory: [requests](https://github.com/psf/requests).
+
+Updates `requests` from 2.32.3 to 2.32.4 - [Release notes](https://github.com/psf/requests/releases)
+  - [Changelog](https://github.com/psf/requests/blob/main/HISTORY.md) -
+  [Commits](https://github.com/psf/requests/compare/v2.32.3...v2.32.4)
+
+--- updated-dependencies: - dependency-name: requests dependency-version: 2.32.4
+
+dependency-type: direct:production
+
+dependency-group: pip
+
+...
+
+Signed-off-by: dependabot[bot] <support@github.com>
+
+
 ## v1.2.0 (2025-02-08)
 
 ### Bug Fixes
